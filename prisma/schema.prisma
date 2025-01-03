@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  Admin
+  manager
+  Waiter
+  customer
+}
+
+enum MenuStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum OrderStatus {
+  Pending
+  Served
+  Completed
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+}
+
+enum TableAssignmentRole {
+  Waiter
+  Customer
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  username         String            @unique
+  password         String
+  role             Role
+  created_by       User?             @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdById      Int?
+  createdUsers     User[]            @relation("UserCreatedBy")
+  created_at       DateTime          @default(now())
+  Menu             Menu[]            @relation("MenuCreatedBy")
+  Orders           Order[]           @relation("OrderCreatedBy")
+  Reports          Report[]          @relation("ReportsManager")
+  TableAssignments TableAssignment[] @relation("UserTableAssignment")
+}
+
+model Menu {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  status      MenuStatus  @default(Pending)
+  created_by  User        @relation("MenuCreatedBy", fields: [createdById], references: [id])
+  createdById Int
+  createdAt   DateTime    @default(now())
+  OrderItems  OrderItem[]
+}
+
+model Table {
+  id           Int               @id @default(autoincrement())
+  table_number Int               @unique
+  qr_code      String
+  payments     Payment[]
+  createdAt    DateTime          @default(now())
+  Assignments  TableAssignment[]
+  Orders       Order[]
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  table       Table?      @relation(fields: [tableId], references: [id])
+  tableId     Int?
+  created_by  User?       @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  createdById Int?
+  status      OrderStatus @default(Pending)
+  created_at  DateTime    @default(now())
+  OrderItems  OrderItem[]
+  Payments    Payment[]
+}
+
+model OrderItem {
+  id         Int   @id @default(autoincrement())
+  order      Order @relation(fields: [orderId], references: [id])
+  orderId    Int
+  menu_item  Menu  @relation(fields: [menuItemId], references: [id])
+  menuItemId Int
+  quantity   Int
+  price      Float
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  table          Table?        @relation(fields: [tableId], references: [id])
+  tableId        Int?
+  order          Order         @relation(fields: [orderId], references: [id])
+  orderId        Int
+  amount         Float
+  payment_status PaymentStatus @default(Pending)
+  paid_at        DateTime?     @default(now())
+}
+
+model Report {
+  id           Int      @id @default(autoincrement())
+  manager      User     @relation("ReportsManager", fields: [managerId], references: [id])
+  managerId    Int
+  week_start   DateTime
+  week_end     DateTime
+  total_sales  Float
+  submitted_at DateTime @default(now())
+}
+
+model TableAssignment {
+  id          Int                 @id @default(autoincrement())
+  table       Table               @relation(fields: [tableId], references: [id])
+  tableId     Int
+  user        User                @relation("UserTableAssignment", fields: [userId], references: [id])
+  userId      Int
+  role        TableAssignmentRole
+  assigned_at DateTime            @default(now())
+}
