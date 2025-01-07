@@ -13,12 +13,14 @@ async function main() {
     await prisma.user.create({
       data: {
         username: "admin",
-        password: "Anihortes",
+        password: hashedPassword,
         role: "ADMIN",
       },
     });
 
-    console.log("Admin user created.");
+    console.log("Admin user created successfully.");
+  } else {
+    console.log("Admin user already exists.");
   }
 }
 

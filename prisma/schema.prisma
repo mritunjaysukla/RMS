@@ -15,7 +15,7 @@ datasource db {
 
 enum Role {
   ADMIN
-  USER
+  MANAGER
   WAITER
 }
 

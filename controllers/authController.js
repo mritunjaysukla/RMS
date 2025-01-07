@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.JWT_SECRET; // Use an environment variable for pr
 // Register a User
 const register = async (req, res) => {
   const { username, password, role } = req.body;
-
+  console.log(req.body);
   try {
     // Validate: Check if the username already exists
     const existingUser = await prisma.user.findUnique({ where: { username } });
