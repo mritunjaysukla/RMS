@@ -62,6 +62,7 @@ model Menu {
   description String
   price       Float
   status      MenuStatus  @default(Pending)
+  isApproved  Boolean     @default(false)
   created_by  User        @relation("MenuCreatedBy", fields: [createdById], references: [id])
   createdById Int
   createdAt   DateTime    @default(now())

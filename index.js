@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
 const validateAdminToken = require("./middlewares/authMiddleware"); // Importing token validation middleware
 const validateRole = require("./middlewares/roleMiddleware"); // Importing role validation middleware
+const menuRoutes = require("./routes/menuRoutes");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use("/auth", authRoutes);
 // app.use("/api", authRoutes);
+app.use("/api", validateAdminToken, menuRoutes);
 
 // Protected routes with admin role validation
 app.post(
