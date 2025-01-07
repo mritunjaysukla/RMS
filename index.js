@@ -22,15 +22,6 @@ app.use("/auth", authRoutes);
 app.use("/api", validateAdminToken, menuRoutes);
 
 // Protected routes with admin role validation
-app.post(
-  "/menu",
-  validateAdminToken,
-  validateRole(["ADMIN", "MANAGER"]),
-  async (_req, res) => {
-    // Logic for adding a menu item
-    res.send("Menu item added successfully");
-  }
-);
 
 app.get(
   "/reports",
