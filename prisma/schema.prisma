@@ -14,10 +14,9 @@ datasource db {
 }
 
 enum Role {
-  Admin
-  manager
-  Waiter
-  customer
+  ADMIN
+  USER
+  WAITER
 }
 
 enum MenuStatus {
@@ -130,4 +129,12 @@ model TableAssignment {
   userId      Int
   role        TableAssignmentRole
   assigned_at DateTime            @default(now())
+}
+
+model Audit {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  action    String
+  details   String
+  createdAt DateTime @default(now())
 }

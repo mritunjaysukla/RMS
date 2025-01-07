@@ -1,11 +1,12 @@
 const { PrismaClient } = require("@prisma/client");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { generateToken } = require("../utils/tokenUtils"); // Import the token generation function
 
 const prisma = new PrismaClient();
+const SECRET_KEY = process.env.JWT_SECRET; // Use an environment variable for production
 
 // Register a User
-exports.register = async (req, res) => {
+const register = async (req, res) => {
   const { username, password, role } = req.body;
 
   try {
@@ -26,7 +27,13 @@ exports.register = async (req, res) => {
       data: { username, password: hashedPassword, role },
     });
 
-    res.status(201).json({ message: "User registered successfully", user });
+    // Remove sensitive data
+    const { password: _, createdById, ...userWithoutSensitiveData } = user;
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: userWithoutSensitiveData,
+    });
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).json({ error: "Failed to register user" });
@@ -34,10 +41,9 @@ exports.register = async (req, res) => {
 };
 
 // Login a User
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   const { username, password } = req.body;
 
-  // Validate input
   if (!username || !password) {
     return res.status(400).json({
       success: false,
@@ -51,21 +57,38 @@ exports.login = async (req, res) => {
     if (!user) return res.status(404).json({ error: "User not found" });
 
     // Check password
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-    if (!isPasswordValid)
+    if (user.password !== password)
       return res.status(403).json({ error: "Invalid credentials" });
+    // Generate token
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
 
-    // Generate token using the utility function
-    const token = generateToken(user);
-
-    res.json({
-      success: true,
-      message: "Login successful",
-      token,
-    });
+    res.json({ message: "Login successful", token });
   } catch (error) {
     console.error("Error logging in user:", error);
     res.status(500).json({ error: "Failed to log in user" });
   }
 };
-module.exports = { register, login };
+
+// Delete User by ID
+const deleteUser = async (req, res) => {
+  const { id } = req.params; // User ID from the URL params
+
+  try {
+    // Find user by ID
+    const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Delete the user
+    await prisma.user.delete({ where: { id: parseInt(id) } });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+module.exports = { register, login, deleteUser };

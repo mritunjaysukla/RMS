@@ -1,11 +1,19 @@
-const require = require("express");
-const { register, login } = require("../controllers/authController");
+const express = require("express");
+const { createUser } = require("../controllers/adminController");
+const validateAdminToken = require("../middlewares/authMiddleware");
+const validateRole = require("../middlewares/roleMiddleware");
+const authController = require("../controllers/authController");
+
 const router = express.Router();
 
-//routes
-//Register
-router.post("/register", register);
+router.post(
+  "/createUser",
+  validateAdminToken,
+  validateRole(["ADMIN"]),
+  createUser
+);
+router.post("/register", authController.register);
+router.post("/login", authController.login);
+router.delete("/deleteUser", authController.deleteUser);
 
-//login
-router.post("/login", login);
-modules.exports = router;
+module.exports = router;
