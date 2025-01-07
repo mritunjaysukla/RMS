@@ -3,12 +3,13 @@ const { createUser } = require("../controllers/adminController");
 const validateAdminToken = require("../middlewares/authMiddleware");
 const validateRole = require("../middlewares/roleMiddleware");
 const authController = require("../controllers/authController");
+const authenticateToken = require("../middlewares/authenticateToken");
 
 const router = express.Router();
 
 router.post(
   "/createUser",
-  validateAdminToken,
+  authenticateToken,
   validateRole(["ADMIN"]),
   createUser
 );

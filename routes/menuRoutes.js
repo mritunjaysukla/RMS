@@ -5,11 +5,17 @@ const {
   addMenuItem,
   approveMenuItem,
 } = require("../controllers/menuController");
+const authenticateToken = require("../middlewares/authenticateToken");
 
 const router = express.Router();
 
 // Route to add a menu item (accessible to ADMIN and MANAGER)
-router.post("/menu", validateRole(["ADMIN", "MANAGER"]), addMenuItem);
+router.post(
+  "/menu",
+  authenticateToken,
+  validateRole(["ADMIN", "MANAGER"]),
+  addMenuItem
+);
 
 // Approve Menu Item Route
 router.patch(

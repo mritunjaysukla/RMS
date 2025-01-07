@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.JWT_SECRET; // Use an environment variable for pr
 // Register a User
 const register = async (req, res) => {
   const { username, password, role } = req.body;
-  console.log(req.body);
+
   try {
     // Validate: Check if the username already exists
     const existingUser = await prisma.user.findUnique({ where: { username } });
@@ -43,7 +43,6 @@ const register = async (req, res) => {
 // Login a User
 const login = async (req, res) => {
   const { username, password } = req.body;
-
   if (!username || !password) {
     return res.status(400).json({
       success: false,
@@ -55,8 +54,6 @@ const login = async (req, res) => {
     // Find user by username
     const user = await prisma.user.findUnique({ where: { username } });
     if (!user) return res.status(404).json({ error: "User not found" });
-
-    // Check password
     if (user.password !== password)
       return res.status(403).json({ error: "Invalid credentials" });
     // Generate token
@@ -65,7 +62,7 @@ const login = async (req, res) => {
       SECRET_KEY,
       { expiresIn: "1h" }
     );
-
+    console.log(token, "login token");
     res.json({ message: "Login successful", token });
   } catch (error) {
     console.error("Error logging in user:", error);
