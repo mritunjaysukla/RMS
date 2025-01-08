@@ -8,7 +8,7 @@ const validateAdminToken = require("./middlewares/authMiddleware"); // Importing
 const validateRole = require("./middlewares/roleMiddleware"); // Importing role validation middleware
 const menuRoutes = require("./routes/menuRoutes");
 const validateManagerToken = require("./middlewares/validatemanagerToken");
-
+const orderRoutes = require("./routes/orderRoutes");
 const app = express();
 
 // dotenv configuration
@@ -21,6 +21,7 @@ app.use(cors());
 app.use("/auth", authRoutes);
 // app.use("/api", authRoutes);
 app.use("/api", menuRoutes);
+app.use("/orders", orderRoutes);
 
 // Protected routes with admin role validation
 
