@@ -1,4 +1,4 @@
-const prisma = require("../models/prismaClient");
+const { prisma } = require("../utils/prisma");
 
 // Get orders for tables managed by the manager
 const getOrders = async (req, res) => {

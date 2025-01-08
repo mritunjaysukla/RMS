@@ -4,11 +4,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
-const validateAdminToken = require("./middlewares/authMiddleware"); // Importing token validation middleware
 const validateRole = require("./middlewares/roleMiddleware"); // Importing role validation middleware
 const menuRoutes = require("./routes/menuRoutes");
-const validateManagerToken = require("./middlewares/validatemanagerToken");
 const orderRoutes = require("./routes/orderRoutes");
+const auth = require("./middlewares/authMiddleware");
 const app = express();
 
 // dotenv configuration
@@ -27,7 +26,7 @@ app.use("/orders", orderRoutes);
 
 app.get(
   "/reports",
-  validateAdminToken,
+  auth,
   validateRole(["ADMIN", "MANAGER"]),
   async (_req, res) => {
     // Logic to fetch and send reports

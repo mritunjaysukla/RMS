@@ -2,13 +2,13 @@
 const validateRole = (allowedRoles) => {
   return (req, res, next) => {
     // Ensure that req.admin exists
-    if (!req.admin || !req.admin.role) {
+    if (!req.user || !req.user.role) {
       return res
         .status(401)
-        .json({ message: "Unauthorized: No admin information" });
+        .json({ message: "Unauthorized: No user information" });
     }
 
-    const userRole = req.admin.role;
+    const userRole = req.user.role;
 
     // Check if the user's role is allowed
     if (!allowedRoles.includes(userRole)) {

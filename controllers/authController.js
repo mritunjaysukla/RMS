@@ -21,12 +21,12 @@ const register = async (req, res) => {
 
     // Hash password
     const hashedPassword = bcrypt.hashSync(password, 10);
-
+    console.log(hashedPassword, "hashed password");
     // Create user in the database
     const user = await prisma.user.create({
       data: { username, password: hashedPassword, role },
     });
-
+    console.log(user, "user");
     // Remove sensitive data
     const { password: _, createdById, ...userWithoutSensitiveData } = user;
 
@@ -49,13 +49,18 @@ const login = async (req, res) => {
       message: "Username and password are required.",
     });
   }
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
     // Find user by username
     const user = await prisma.user.findUnique({ where: { username } });
-    if (!user) return res.status(404).json({ error: "User not found" });
-    if (user.password !== password)
-      return res.status(403).json({ error: "Invalid credentials" });
+    if (!user) return res.status(404).json({ error: "invalid credentials" });
+    console.log(password, "user password", hashedPassword, "hashed password");
+    console.log(user.password, "user password");
+    console.log(bcrypt.compareSync(password, user.password));
+    if (!bcrypt.compareSync(password, user.password)) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
     // Generate token
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },

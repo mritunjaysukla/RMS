@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const validateAdminToken = require("../middlewares/authMiddleware");
+const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
 // Log audit action
@@ -28,10 +29,10 @@ const createUser = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
-
+    const hashedPassword = bcrypt.hashSync(password, 10);
     // Create new user
     const newUser = await prisma.user.create({
-      data: { username, password, role },
+      data: { username, password: hashedPassword, role },
     });
 
     // Log the admin action
