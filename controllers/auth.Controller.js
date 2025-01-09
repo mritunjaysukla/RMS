@@ -1,6 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 const SECRET_KEY = process.env.JWT_SECRET; // Use an environment variable for production
@@ -15,28 +15,30 @@ const register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "Username already registered, please log in.",
+        message: 'Username already registered, please log in.'
       });
     }
 
     // Hash password
     const hashedPassword = bcrypt.hashSync(password, 10);
-    console.log(hashedPassword, "hashed password");
+
     // Create user in the database
     const user = await prisma.user.create({
-      data: { username, password: hashedPassword, role },
+      data: { username, password: hashedPassword, role }
     });
-    console.log(user, "user");
+
     // Remove sensitive data
+    // ignore eslint
+    // eslint-disable-next-line no-unused-vars
     const { password: _, createdById, ...userWithoutSensitiveData } = user;
 
     res.status(201).json({
-      message: "User registered successfully",
-      user: userWithoutSensitiveData,
+      message: 'User registered successfully',
+      user: userWithoutSensitiveData
     });
   } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ error: "Failed to register user" });
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Failed to register user' });
   }
 };
 
@@ -46,32 +48,29 @@ const login = async (req, res) => {
   if (!username || !password) {
     return res.status(400).json({
       success: false,
-      message: "Username and password are required.",
+      message: 'Username and password are required.'
     });
   }
-  const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
     // Find user by username
     const user = await prisma.user.findUnique({ where: { username } });
-    if (!user) return res.status(404).json({ error: "invalid credentials" });
-    console.log(password, "user password", hashedPassword, "hashed password");
-    console.log(user.password, "user password");
-    console.log(bcrypt.compareSync(password, user.password));
+    if (!user) return res.status(404).json({ error: 'invalid credentials' });
+
     if (!bcrypt.compareSync(password, user.password)) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
     // Generate token
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },
       SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: '1h' }
     );
-    console.log(token, "login token");
-    res.json({ message: "Login successful", token });
+
+    res.json({ message: 'Login successful', token });
   } catch (error) {
-    console.error("Error logging in user:", error);
-    res.status(500).json({ error: "Failed to log in user" });
+    console.error('Error logging in user:', error);
+    res.status(500).json({ error: 'Failed to log in user' });
   }
 };
 
@@ -82,15 +81,15 @@ const deleteUser = async (req, res) => {
   try {
     // Find user by ID
     const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     // Delete the user
     await prisma.user.delete({ where: { id: parseInt(id) } });
 
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
-    console.error("Error deleting user:", error);
-    res.status(500).json({ error: "Failed to delete user" });
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
   }
 };
 module.exports = { register, login, deleteUser };

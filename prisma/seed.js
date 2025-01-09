@@ -1,26 +1,26 @@
-const bcrypt = require("bcrypt");
-const { PrismaClient } = require("@prisma/client");
+const bcrypt = require('bcrypt');
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 async function main() {
   const existingAdmin = await prisma.user.findUnique({
-    where: { username: "admin" },
+    where: { username: 'admin' }
   });
 
   if (!existingAdmin) {
-    const hashedPassword = bcrypt.hashSync("Anihortes", 10);
+    const hashedPassword = bcrypt.hashSync('Anihortes', 10);
 
     await prisma.user.create({
       data: {
-        username: "admin",
+        username: 'admin',
         password: hashedPassword,
-        role: "ADMIN",
-      },
+        role: 'ADMIN'
+      }
     });
 
-    console.log("Admin user created successfully.");
+    console.log('Admin user created successfully.');
   } else {
-    console.log("Admin user already exists.");
+    console.log('Admin user already exists.');
   }
 }
 

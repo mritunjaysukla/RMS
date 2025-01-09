@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // Controller to add a new menu item
@@ -11,17 +11,17 @@ exports.addMenuItem = async (req, res) => {
         name,
         price,
         description,
-        isApproved: false, // Default to not approved
-      },
+        isApproved: false // Default to not approved
+      }
     });
 
     res.status(201).json({
-      message: "Menu item added successfully",
-      menuItem: newMenuItem,
+      message: 'Menu item added successfully',
+      menuItem: newMenuItem
     });
   } catch (error) {
-    console.error("Error adding menu item:", error);
-    res.status(500).json({ message: "Failed to add menu item", error });
+    console.error('Error adding menu item:', error);
+    res.status(500).json({ message: 'Failed to add menu item', error });
   }
 };
 
@@ -31,29 +31,29 @@ exports.approveMenuItem = async (req, res) => {
   try {
     // Fetch the menu item by ID
     const menuItem = await prisma.menuItem.findUnique({
-      where: { id: menuItemId },
+      where: { id: menuItemId }
     });
 
     if (!menuItem) {
-      return res.status(404).json({ message: "Menu item not found" });
+      return res.status(404).json({ message: 'Menu item not found' });
     }
 
     if (menuItem.isApproved) {
-      return res.status(400).json({ message: "Menu item is already approved" });
+      return res.status(400).json({ message: 'Menu item is already approved' });
     }
 
     // Approve the menu item
     const approvedMenuItem = await prisma.menuItem.update({
       where: { id: menuItemId },
-      data: { isApproved: true },
+      data: { isApproved: true }
     });
 
     res.status(200).json({
-      message: "Menu item approved successfully",
-      menuItem: approvedMenuItem,
+      message: 'Menu item approved successfully',
+      menuItem: approvedMenuItem
     });
   } catch (error) {
-    console.error("Error approving menu item:", error);
-    res.status(500).json({ message: "Failed to approve menu item", error });
+    console.error('Error approving menu item:', error);
+    res.status(500).json({ message: 'Failed to approve menu item', error });
   }
 };

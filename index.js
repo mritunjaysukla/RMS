@@ -1,13 +1,10 @@
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
-const authRoutes = require("./routes/auth.Routes");
-const validateRole = require("./middlewares/role.Middleware"); // Importing role validation middleware
-const menuRoutes = require("./routes/menu.Routes");
-const orderRoutes = require("./routes/order.Routes");
-const auth = require("./middlewares/auth.Middleware");
+const express = require('express');
+const morgan = require('morgan');
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const validateRole = require('./middlewares/role.Middleware'); // Importing role validation middleware
+const auth = require('./middlewares/auth.Middleware');
+
 const app = express();
 
 // dotenv configuration
@@ -15,27 +12,18 @@ dotenv.config();
 
 // Middlewares
 app.use(bodyParser.json());
-app.use(morgan("dev"));
-app.use(cors());
-app.use("/auth", authRoutes);
-// app.use("/api", authRoutes);
-app.use("/api", menuRoutes);
-app.use("/orders", orderRoutes);
+app.use(morgan('dev'));
+require('./routes/router')(app);
 
 // Protected routes with admin role validation
 
-app.get(
-  "/reports",
-  auth,
-  validateRole(["ADMIN", "MANAGER"]),
-  async (_req, res) => {
-    // Logic to fetch and send reports
-    res.send("Reports fetched successfully");
-  }
-);
+app.get('/reports', auth, validateRole(['ADMIN', 'MANAGER']), (_req, res) => {
+  // Logic to fetch and send reports
+  res.send('Reports fetched successfully');
+});
 
-app.get("/", (_req, res) => {
-  return res.status(200).send("Welcome to Restaurant Management System");
+app.get('/', (_req, res) => {
+  return res.status(200).send('Welcome to Restaurant Management System');
 });
 
 // Port configuration

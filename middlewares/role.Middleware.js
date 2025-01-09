@@ -5,7 +5,7 @@ const validateRole = (allowedRoles) => {
     if (!req.user || !req.user.role) {
       return res
         .status(401)
-        .json({ message: "Unauthorized: No user information" });
+        .json({ message: 'Unauthorized: No user information' });
     }
 
     const userRole = req.user.role;
@@ -14,7 +14,7 @@ const validateRole = (allowedRoles) => {
     if (!allowedRoles.includes(userRole)) {
       return res
         .status(403)
-        .json({ message: "You do not have permission to perform this action" });
+        .json({ message: 'You do not have permission to perform this action' });
     }
     next();
   };

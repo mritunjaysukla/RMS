@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // Create User
@@ -8,17 +8,17 @@ exports.createUser = async (req, res) => {
   try {
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
+      return res.status(400).json({ message: 'Username already exists' });
     }
 
     const newUser = await prisma.user.create({
-      data: { username, password, role },
+      data: { username, password, role }
     });
     res
       .status(201)
-      .json({ message: "User created successfully", user: newUser });
+      .json({ message: 'User created successfully', user: newUser });
   } catch (error) {
-    res.status(500).json({ message: "Error creating user", error });
+    res.status(500).json({ message: 'Error creating user', error });
   }
 };
 
@@ -28,7 +28,7 @@ exports.getUsers = async (req, res) => {
     const users = await prisma.user.findMany();
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching users", error });
+    res.status(500).json({ message: 'Error fetching users', error });
   }
 };
 
@@ -38,11 +38,11 @@ exports.getUserById = async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user", error });
+    res.status(500).json({ message: 'Error fetching user', error });
   }
 };
 
@@ -54,14 +54,14 @@ exports.updateUser = async (req, res) => {
   try {
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(id) },
-      data: { username, password, role },
+      data: { username, password, role }
     });
 
     res
       .status(200)
-      .json({ message: "User updated successfully", user: updatedUser });
+      .json({ message: 'User updated successfully', user: updatedUser });
   } catch (error) {
-    res.status(500).json({ message: "Error updating user", error });
+    res.status(500).json({ message: 'Error updating user', error });
   }
 };
 
@@ -71,8 +71,8 @@ exports.deleteUser = async (req, res) => {
 
   try {
     await prisma.user.delete({ where: { id: parseInt(id) } });
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting user", error });
+    res.status(500).json({ message: 'Error deleting user', error });
   }
 };
