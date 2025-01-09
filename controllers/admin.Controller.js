@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const validateAdminToken = require("../middlewares/authMiddleware");
+const validateAdminToken = require("../middlewares/auth.Middleware");
 const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 

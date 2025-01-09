@@ -3,11 +3,11 @@ const morgan = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
-const authRoutes = require("./routes/authRoutes");
-const validateRole = require("./middlewares/roleMiddleware"); // Importing role validation middleware
-const menuRoutes = require("./routes/menuRoutes");
-const orderRoutes = require("./routes/orderRoutes");
-const auth = require("./middlewares/authMiddleware");
+const authRoutes = require("./routes/auth.Routes");
+const validateRole = require("./middlewares/role.Middleware"); // Importing role validation middleware
+const menuRoutes = require("./routes/menu.Routes");
+const orderRoutes = require("./routes/order.Routes");
+const auth = require("./middlewares/auth.Middleware");
 const app = express();
 
 // dotenv configuration

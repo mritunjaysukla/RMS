@@ -1,10 +1,10 @@
 const express = require("express");
-const auth = require("../middlewares/authMiddleware");
-const validateRole = require("../middlewares/roleMiddleware");
+const auth = require("../middlewares/auth.Middleware");
+const validateRole = require("../middlewares/role.Middleware");
 const {
   addMenuItem,
   approveMenuItem,
-} = require("../controllers/menuController");
+} = require("../controllers/menu.Controller");
 
 const router = express.Router();
 
