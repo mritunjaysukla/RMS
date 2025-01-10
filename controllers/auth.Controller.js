@@ -1,76 +1,109 @@
-const { PrismaClient } = require('@prisma/client');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-
-const prisma = new PrismaClient();
+const { prisma } = require('../utils/prisma');
 const SECRET_KEY = process.env.JWT_SECRET; // Use an environment variable for production
 
 // Register a User
+
 const register = async (req, res) => {
   const { username, password, role } = req.body;
 
   try {
-    // Validate: Check if the username already exists
-    const existingUser = await prisma.user.findUnique({ where: { username } });
-    if (existingUser) {
-      return res.status(400).json({
+    // Hash password with salt rounds of 10
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Registration:', {
+      originalPassword: password,
+      hashedPassword: hashedPassword
+    });
+
+    // eslint-disable-next-line no-unused-vars
+    const user = await prisma.user.create({
+      data: {
+        username,
+        password: hashedPassword,
+        role,
+        isActive: true
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully'
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed'
+    });
+  }
+};
+const loginUser = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Step 1: Find user and log raw values
+    const user = await prisma.user.findUnique({
+      where: { username }
+    });
+
+    console.log('Login attempt:', {
+      providedUsername: username,
+      providedPassword: password,
+      userFound: !!user,
+      storedHash: user ? user.password : null
+    });
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'User not found' });
+    }
+
+    // Step 2: Compare passwords with detailed logging
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Password comparison:', {
+      plainPassword: password,
+      storedHash: user.password,
+      isValid: isPasswordValid
+    });
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
         success: false,
-        message: 'Username already registered, please log in.'
+        message: 'Invalid credentials'
       });
     }
 
-    // Hash password
-    const hashedPassword = bcrypt.hashSync(password, 10);
-
-    // Create user in the database
-    const user = await prisma.user.create({
-      data: { username, password: hashedPassword, role }
-    });
-
-    // Remove sensitive data
-    // ignore eslint
-    // eslint-disable-next-line no-unused-vars
-    const { password: _, createdById, ...userWithoutSensitiveData } = user;
-
-    res.status(201).json({
-      message: 'User registered successfully',
-      user: userWithoutSensitiveData
-    });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ error: 'Failed to register user' });
-  }
-};
-
-// Login a User
-const login = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({
-      success: false,
-      message: 'Username and password are required.'
-    });
-  }
-
-  try {
-    // Find user by username
-    const user = await prisma.user.findUnique({ where: { username } });
-    if (!user) return res.status(404).json({ error: 'invalid credentials' });
-
-    if (!bcrypt.compareSync(password, user.password)) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
     // Generate token
     const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role
+      },
       SECRET_KEY,
       { expiresIn: '1h' }
     );
 
-    res.json({ message: 'Login successful', token });
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          role: user.role
+        }
+      }
+    });
   } catch (error) {
-    console.error('Error logging in user:', error);
-    res.status(500).json({ error: 'Failed to log in user' });
+    console.error('Login error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
   }
 };
 
@@ -92,4 +125,4 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete user' });
   }
 };
-module.exports = { register, login, deleteUser };
+module.exports = { register, loginUser, deleteUser };

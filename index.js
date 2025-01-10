@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const validateRole = require('./middlewares/role.Middleware'); // Importing role validation middleware
-const auth = require('./middlewares/auth.Middleware');
+const { auth, authorize } = require('./middlewares/auth.Middleware');
 
 const app = express();
 
@@ -17,10 +17,16 @@ require('./routes/router')(app);
 
 // Protected routes with admin role validation
 
-app.get('/reports', auth, validateRole(['ADMIN', 'MANAGER']), (_req, res) => {
-  // Logic to fetch and send reports
-  res.send('Reports fetched successfully');
-});
+app.get(
+  '/reports',
+  auth,
+  authorize,
+  validateRole(['ADMIN', 'MANAGER']),
+  (_req, res) => {
+    // Logic to fetch and send reports
+    res.send('Reports fetched successfully');
+  }
+);
 
 app.get('/', (_req, res) => {
   return res.status(200).send('Welcome to Restaurant Management System');

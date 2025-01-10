@@ -50,6 +50,7 @@ model User {
   createdById      Int?
   createdUsers     User[]            @relation("UserCreatedBy")
   created_at       DateTime          @default(now())
+  isActive         Boolean           @default(true)
   Menu             Menu[]            @relation("MenuCreatedBy")
   Orders           Order[]           @relation("OrderCreatedBy")
   Reports          Report[]          @relation("ReportsManager")
