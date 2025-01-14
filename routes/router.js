@@ -10,4 +10,5 @@ module.exports = (app) => {
   app.use('/auth', authRoutes);
   app.use('/api', menuRoutes);
   app.use('/orders', orderRoutes);
+  app.use('/reports', require('./report.routes'));
 };

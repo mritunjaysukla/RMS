@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const validateRole = require('./middlewares/role.Middleware'); // Importing role validation middleware
 const { auth, authorize } = require('./middlewares/auth.Middleware');
-
 const app = express();
 
 // dotenv configuration
