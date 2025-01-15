@@ -15,7 +15,11 @@ const router = express.Router();
 router.post('/menu', auth, validateRole(['ADMIN', 'MANAGER']), createMenuItem);
 
 // Route to get all menu items (accessible to all authenticated users)
-router.get('/menu', getAllMenuItems);
+router.get(
+  '/menu',
+  validateRole(['ADMIN', 'MANAGER', 'WAITER']),
+  getAllMenuItems
+);
 
 // Route to update a menu item (accessible to ADMIN and MANAGER)
 router.put(
