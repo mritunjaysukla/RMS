@@ -6,9 +6,9 @@ const {
   updateOrderStatus,
   getOrders,
   handlePayment
-} = require('../controllers/order.Controller');
-const validateRole = require('../middlewares/role.Middleware');
-const { auth, authorize } = require('../middlewares/auth.Middleware');
+} = require('../controllers/order.controller');
+const validateRole = require('../middlewares/role.middleware');
+const { auth, authorize } = require('../middlewares/auth.middleware');
 
 router.get('/orders', auth, authorize, validateRole(['MANAGER']), getOrders);
 router.post(

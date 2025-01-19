@@ -1,8 +1,8 @@
 const express = require('express');
 const { createUser } = require('../controllers/admin.controller');
-const { auth, authorize } = require('../middlewares/auth.Middleware');
-const validateRole = require('../middlewares/role.Middleware');
-const authController = require('../controllers/auth.Controller');
+const { auth, authorize } = require('../middlewares/auth.middleware');
+const validateRole = require('../middlewares/role.middleware');
+const authController = require('../controllers/auth.controller');
 
 const router = express.Router();
 // router.use(auth); // Apply authentication to all routes

@@ -1,13 +1,13 @@
 const express = require('express');
-const { auth } = require('../middlewares/auth.Middleware');
-const validateRole = require('../middlewares/role.Middleware');
+const { auth } = require('../middlewares/auth.middleware');
+const validateRole = require('../middlewares/role.middleware');
 const {
   createMenuItem,
   getAllMenuItems,
   updateMenuItem,
   deleteMenuItem,
   approveMenuItem
-} = require('../controllers/menu.Controller');
+} = require('../controllers/menu.controller');
 
 const router = express.Router();
 

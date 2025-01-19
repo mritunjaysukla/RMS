@@ -1,9 +1,10 @@
 const express = require('express');
+
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
-const validateRole = require('./middlewares/role.Middleware'); // Importing role validation middleware
-const { auth, authorize } = require('./middlewares/auth.Middleware');
+const validateRole = require('./middlewares/role.middleware'); // Importing role validation middleware
+const { auth, authorize } = require('./middlewares/auth.middleware');
 const app = express();
 
 // dotenv configuration
@@ -37,4 +38,7 @@ const PORT = process.env.PORT || 5000;
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(
+    `API documentation available at http://localhost:${PORT}/api-docs`
+  );
 });
