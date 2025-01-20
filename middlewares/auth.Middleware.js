@@ -43,6 +43,7 @@ const auth = async (req, res, next) => {
   }
 };
 // Role-based middleware
+// depricated middleware
 const authorize = (roles = []) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

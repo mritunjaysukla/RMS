@@ -19,6 +19,7 @@ const logAudit = async (adminId, action, details) => {
 
 // Create user function
 const createUser = async (req, res) => {
+  console.log('createuser');
   const { username, password, role } = req.body;
   const adminId = req.user.id; // Assuming JWT has admin info in the request
 
@@ -41,7 +42,7 @@ const createUser = async (req, res) => {
       `Created a new user with username: ${username}`
     );
 
-    res
+    return res
       .status(201)
       .json({ message: 'User created successfully', user: newUser });
   } catch (error) {

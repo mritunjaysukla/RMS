@@ -25,13 +25,7 @@ const doc = {
 };
 
 const outputFile = './config/swagger-output.json'; // Output file for Swagger JSON
-const endpointsFiles = [
-  './routes/auth.routes.js',
-  './routes/menu.routes.js',
-  './routes/order.routes.js',
-  './routes/report.routes.js',
-  './routes/table.routes.js'
-]; // List of route files
+const endpointsFiles = ['./routes/router.js']; // Main router file
 
 swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
   console.log('Swagger JSON generated successfully!');

@@ -133,7 +133,8 @@ exports.approveMenuItem = async (req, res) => {
     // Approve the menu item
     const approvedMenuItem = await prisma.menu.update({
       where: { id: menuItemId },
-      data: { isApproved: true }
+
+      data: { isApproved: true, status: 'Approved' }
     });
 
     res.status(200).json({
