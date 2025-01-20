@@ -4,31 +4,44 @@ const prisma = new PrismaClient();
 // Controller to add a new menu item
 exports.createMenuItem = async (req, res) => {
   const { name, price, description } = req.body;
+  const userId = req.user?.id; // Get user ID from auth middleware
 
   try {
-    const newMenuItem = await prisma.menuItem.create({
+    // Validate required fields
+    if (!name || !price || !description) {
+      return res.status(400).json({
+        message: 'Name, price, and description are required'
+      });
+    }
+
+    const newMenuItem = await prisma.menu.create({
       data: {
         name,
-        price,
+        price: parseFloat(price),
         description,
-        isApproved: false // Default to not approved
+        isApproved: false,
+        createdById: userId
       }
     });
 
     res.status(201).json({
+      success: true,
       message: 'Menu item added successfully',
       menuItem: newMenuItem
     });
   } catch (error) {
     console.error('Error adding menu item:', error);
-    res.status(500).json({ message: 'Failed to add menu item', error });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to add menu item'
+    });
   }
 };
 
 // Read all menu items
 exports.getAllMenuItems = async (req, res) => {
   try {
-    const menuItems = await prisma.menuItem.findMany();
+    const menuItems = await prisma.menu.findMany();
     res.status(200).json({ menuItems });
   } catch (error) {
     console.error('Error fetching menu items:', error);
@@ -43,7 +56,7 @@ exports.updateMenuItem = async (req, res) => {
 
   try {
     // Check if the menu item exists
-    const menuItem = await prisma.menuItem.findUnique({
+    const menuItem = await prisma.menu.findUnique({
       where: { id: menuItemId }
     });
 
@@ -52,7 +65,7 @@ exports.updateMenuItem = async (req, res) => {
     }
 
     // Update the menu item
-    const updatedMenuItem = await prisma.menuItem.update({
+    const updatedMenuItem = await prisma.menu.update({
       where: { id: menuItemId },
       data: {
         name: name || menuItem.name, // Update only if provided
@@ -101,11 +114,11 @@ exports.deleteMenuItem = async (req, res) => {
 
 // Controller to approve a menu item
 exports.approveMenuItem = async (req, res) => {
-  const menuItemId = parseInt(req.params.id); // Menu item ID from the URL params
-
+  const menuItemId = parseInt(req?.params?.id); // Menu item ID from the URL params
+  console.log('menuId', req?.params?.id);
   try {
     // Fetch the menu item by ID
-    const menuItem = await prisma.menuItem.findUnique({
+    const menuItem = await prisma.menu.findUnique({
       where: { id: menuItemId }
     });
 
@@ -118,7 +131,7 @@ exports.approveMenuItem = async (req, res) => {
     }
 
     // Approve the menu item
-    const approvedMenuItem = await prisma.menuItem.update({
+    const approvedMenuItem = await prisma.menu.update({
       where: { id: menuItemId },
       data: { isApproved: true }
     });

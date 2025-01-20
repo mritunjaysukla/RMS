@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+     
+  "swagger-autogen": "node config/swagger.js",  
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
@@ -32,6 +34,7 @@
     "pg": "^8.13.1",
     "qrcode": "^1.5.4",
     "sequelize": "^6.37.5",
+    "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },

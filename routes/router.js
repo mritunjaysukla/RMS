@@ -1,11 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('../config/swagger');
+const swaggerSpec = require('../config/swagger-output.json');
 
-const authRoutes = require('./auth.Routes');
-const menuRoutes = require('./menu.Routes');
-const orderRoutes = require('./order.Routes');
+const authRoutes = require('./auth.routes');
+const menuRoutes = require('./menu.routes');
+const orderRoutes = require('./order.routes');
 const reportsRoutes = require('./report.routes');
 const tableRoutes = require('./table.routes');
 module.exports = (app) => {
@@ -19,20 +19,4 @@ module.exports = (app) => {
   app.use('/tables', tableRoutes);
   // Swagger UI route
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  /**
-   * @swagger
-   * /protected:
-   *   get:
-   *     summary: Access protected resource
-   *     security:
-   *       - BearerAuth: []
-   *     responses:
-   *       200:
-   *         description: Access granted
-   *       401:
-   *         description: Unauthorized
-   */
-  app.get('/protected', (req, res) => {
-    res.send('Protected resource');
-  });
 };

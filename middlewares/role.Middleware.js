@@ -2,6 +2,7 @@
 const validateRole = (allowedRoles) => {
   return (req, res, next) => {
     // Ensure that req.admin exists
+
     if (!req.user || !req.user.role) {
       return res
         .status(401)
