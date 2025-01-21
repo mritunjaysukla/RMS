@@ -37,11 +37,6 @@ module.exports = (app) => {
    */
   app.use('/auth', authRoutes);
 
-  /**
-   * @swagger
-   * /api:
-   *   tags: [Menu]
-   */
   app.use('/api', menuRoutes);
 
   /**
