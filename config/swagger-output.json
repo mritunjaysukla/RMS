@@ -1,30 +1,15 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Restaurant Management API",
+    "title": "Restaurant Management System API",
+    "description": "API documentation for Restaurant Management System",
     "version": "1.0.0",
-    "description": ""
-  },
-  "host": "localhost:5000",
-  "basePath": "/",
-  "tags": [
-    {
-      "name": "Auth",
-      "description": "Authentication endpoints"
-    },
-    {
-      "name": "Menu",
-      "description": "Menu management"
-    },
-    {
-      "name": "Orders",
-      "description": "Order operations"
-    },
-    {
-      "name": "Tables",
-      "description": "Table management"
+    "contact": {
+      "email": "admin@restaurant.com"
     }
-  ],
+  },
+  "host": "http://localhost:undefined",
+  "basePath": "/",
   "schemes": [
     "http"
   ],
@@ -32,103 +17,25 @@
     "bearerAuth": {
       "type": "apiKey",
       "in": "header",
-      "name": "Authorization"
+      "name": "Authorization",
+      "description": "Bearer token for authentication"
     }
   },
   "paths": {
-    "/reports": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/auth/createUser": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "role": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/auth/login": {
+    "/createUser": {
       "post": {
         "tags": [
-          "Auth"
-        ],
+                
+                  "Auth"
+                 
+      ],
         "description": "",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -140,7 +47,55 @@
                 },
                 "password": {
                   "example": "any"
+                },
+                "role": {
+                  "example": "any"
                 }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+      "/login": {
+        "post": {
+          "tags": [
+             "Auth"
+             ],
+          "description": "",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
               }
             }
           }
@@ -158,8 +113,10 @@
         }
       }
     },
-    "/auth/register": {
+    "/register": {
       "post": {
+        "tags": [
+          "Auth"],
         "description": "",
         "parameters": [
           {
@@ -191,8 +148,11 @@
         }
       }
     },
-    "/auth/users/{id}": {
+    "/users/{id}": {
       "delete": {
+        "tags": [
+          "Auth"
+          ],
         "description": "",
         "parameters": [
           {
@@ -215,8 +175,10 @@
         }
       }
     },
-    "/api/menu/menu": {
+    "/menu": {
       "post": {
+        "tags": [
+          "Menu"],
         "description": "",
         "parameters": [
           {
@@ -265,6 +227,8 @@
         }
       },
       "get": {
+        "tags": [
+           "Menu"],
         "description": "",
         "parameters": [
           {
@@ -292,8 +256,10 @@
         }
       }
     },
-    "/api/menu/menu/{id}": {
+    "/menu/{id}": {
       "put": {
+        "tags": [
+          "Menu"],
         "description": "",
         "parameters": [
           {
@@ -345,6 +311,8 @@
         }
       },
       "delete": {
+        "tags": [
+          "Menu"],
         "description": "",
         "parameters": [
           {
@@ -378,8 +346,10 @@
         }
       }
     },
-    "/api/menu/menu/approve/{id}": {
+    "/menu/approve/{id}": {
       "patch": {
+        "tags": [
+          "Menu"],
         "description": "",
         "parameters": [
           {
@@ -416,8 +386,10 @@
         }
       }
     },
-    "/api/orders/orders": {
+    "/orders": {
       "get": {
+        "tags": [
+          "Orders"],
         "description": "",
         "parameters": [
           {
@@ -445,6 +417,8 @@
         }
       },
       "post": {
+        "tags": [
+         "Orders"],
         "description": "",
         "parameters": [
           {
@@ -479,8 +453,11 @@
         }
       }
     },
-    "/api/orders/payment": {
+    "/payment": {
+      
       "post": {
+        "tags": [
+          "Orders"],
         "description": "",
         "parameters": [
           {
@@ -526,8 +503,10 @@
         }
       }
     },
-    "/api/orders/orders/table/{tableId}": {
+    "/orders/table/{tableId}": {
       "get": {
+        "tags": [
+          "Orders"],
         "description": "",
         "parameters": [
           {
@@ -547,8 +526,11 @@
         }
       }
     },
-    "/api/orders/orders/{orderId}": {
+    "/orders/{orderId}": {
+
       "patch": {
+        "tags": [
+          "Orders"],
         "description": "",
         "parameters": [
           {
@@ -580,8 +562,53 @@
         }
       }
     },
-    "/api/tables/tables": {
+    "/reports": {
+      "post": {
+        "tags": [
+         "Reports"],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "salesData": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/tables": {
       "get": {
+        "tags": [
+          "Tables"],
         "description": "",
         "responses": {
           "200": {
@@ -593,8 +620,10 @@
         }
       }
     },
-    "/api/tables/tables/{tableId}": {
+    "/tables/{tableId}": {
       "patch": {
+        "tags": [
+         "Tables"],
         "description": "",
         "parameters": [
           {
@@ -627,8 +656,467 @@
       }
     }
   },
-  "apis": [
-    "./index.js",
-    "./routes/*.routes.js"
-  ]
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "integer"
+        },
+        "username": {
+          "type": "string",
+          "example": "string"
+        },
+        "role": {
+          "type": "object",
+          "properties": {
+            "enum": {
+              "type": "array",
+              "example": [
+                "ADMIN",
+                "MANAGER",
+                "WAITER"
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "MenuStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Pending",
+            "Approved",
+            "Rejected"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PaymentStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Pending",
+            "Completed"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TableAssignmentRole": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Waiter",
+            "Customer"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OrderStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Pending",
+            "Completed"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "MenuItem": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "price": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            },
+            "status": {
+              "$ref": "#/definitions/MenuStatus"
+            },
+            "isApproved": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            },
+            "createdById": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Table": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "table_number": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "qr_code": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "tableId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/OrderItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "OrderItem": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "orderId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "menuItemId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "quantity": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "price": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Payment": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "orderId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "tableId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "amount": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            },
+            "status": {
+              "$ref": "#/definitions/PaymentStatus"
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "TableAssignment": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "tableId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "userId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "role": {
+              "$ref": "#/definitions/TableAssignmentRole"
+            },
+            "assignedAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

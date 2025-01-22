@@ -18,6 +18,7 @@ router.post(
   validateRole(['MANAGER']),
   handlePayment
 );
+
 router.post('/orders', validateRole(['WAITER']), createOrder);
 router.get('/orders/table/:tableId', getOrdersByTable);
 router.patch('/orders/:orderId', updateOrderStatus);

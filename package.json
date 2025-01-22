@@ -4,11 +4,12 @@
   "main": "index.js",
   "scripts": {
     "swagger-autogen": "node ./config/swagger.js",
+    "start": "npm run swagger-autogen && node index.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "start": "node index.js",
+    
     "dev": "nodemon index.js",
     "validate": "npm run format:check && npm run lint"
   },

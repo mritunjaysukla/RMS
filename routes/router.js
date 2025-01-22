@@ -1,18 +1,28 @@
+const express = require('express');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('../swagger-output.json');
+
+const swaggerFile = require('../config/swagger-output.json');
+const authRoutes = require('./auth.routes');
+const menuRoutes = require('./menu.routes');
+const orderRoutes = require('./order.routes');
+const reportsRoutes = require('./report.routes');
+const tableRoutes = require('./table.routes');
 
 module.exports = (app) => {
+  app.use(express.json());
+  app.use(cors());
+  app.use(express.urlencoded({ extended: false }));
+
+  app.use('/auth', authRoutes);
+
+  app.use('/menu', menuRoutes);
+
+  app.use('/orders', orderRoutes);
+
+  app.use('/reports', reportsRoutes);
+
+  app.use('/tables', tableRoutes);
+
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
-
-  // Group routes by domain
-  const authPrefix = '/auth';
-  const menuPrefix = '/api/menu';
-  const orderPrefix = '/api/orders';
-  const tablePrefix = '/api/tables';
-
-  // Apply route prefixes
-  app.use(authPrefix, require('./auth.routes'));
-  app.use(menuPrefix, require('./menu.routes'));
-  app.use(orderPrefix, require('./order.routes'));
-  app.use(tablePrefix, require('./table.routes'));
 };
