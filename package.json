@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-     
-  "swagger-autogen": "node ./config/swagger.js",  
+    "swagger-autogen": "node ./config/swagger.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
