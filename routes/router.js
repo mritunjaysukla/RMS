@@ -8,13 +8,18 @@ const menuRoutes = require('./menu.routes');
 const orderRoutes = require('./order.routes');
 const reportsRoutes = require('./report.routes');
 const tableRoutes = require('./table.routes');
+const userRoutes = require('./user.routes');
 
 module.exports = (app) => {
   app.use(express.json());
+
   app.use(cors());
+
   app.use(express.urlencoded({ extended: false }));
 
-  app.use('/auth', authRoutes);
+  app.use('/api', authRoutes);
+
+  app.use('/users', userRoutes);
 
   app.use('/menu', menuRoutes);
 

@@ -2,6 +2,7 @@ const { prisma } = require('../utils/prisma');
 
 // Get table status
 exports.getTableStatus = async (req, res) => {
+  // #swagger.tags = ['Table']
   try {
     const tables = await prisma.table.findMany();
     res.status(200).json({
@@ -19,6 +20,7 @@ exports.getTableStatus = async (req, res) => {
 
 // Update table status
 exports.updateTableStatus = async (req, res) => {
+  // #swagger.tags = ['Table']
   const { tableId } = req.params;
   const { status } = req.body; // Example: 'OCCUPIED'
 

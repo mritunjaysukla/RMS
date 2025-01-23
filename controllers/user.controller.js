@@ -6,6 +6,7 @@ const SALT_ROUNDS = 10;
 
 // Create User
 exports.createUser = async (req, res) => {
+  // #swagger.tags = ['User']
   const { username, password, role } = req.body;
 
   if (!username || !password || !role) {
@@ -35,6 +36,7 @@ exports.createUser = async (req, res) => {
 
 // Read All Users
 exports.getUsers = async (req, res) => {
+  // #swagger.tags = ['User']
   try {
     const users = await prisma.user.findMany({
       select: { id: true, username: true, role: true } // Exclude passwords
@@ -48,6 +50,7 @@ exports.getUsers = async (req, res) => {
 
 // Read a Single User
 exports.getUserById = async (req, res) => {
+  // #swagger.tags = ['User']
   const { id } = req.params;
 
   try {
@@ -66,6 +69,7 @@ exports.getUserById = async (req, res) => {
 
 // Update User
 exports.updateUser = async (req, res) => {
+  // #swagger.tags = ['User']
   const { id } = req.params;
   const { username, password, role } = req.body;
 
@@ -91,6 +95,7 @@ exports.updateUser = async (req, res) => {
 
 // Delete User
 exports.deleteUser = async (req, res) => {
+  // #swagger.tags = ['User']
   const { id } = req.params;
 
   try {

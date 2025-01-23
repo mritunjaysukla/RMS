@@ -1,3 +1,5 @@
+const { serve } = require('swagger-ui-express');
+
 const swaggerAutogen = require('swagger-autogen')();
 const PORT = process.env.PORT;
 const doc = {
@@ -11,9 +13,23 @@ const doc = {
     }
   },
 
-  host: `http://localhost:${PORT}`,
+  servers: [
+    {
+      url: 'http://localhost:{PORT}',
+      description: 'Local Development Server',
+      variables: {
+        PORT: {
+          default: '8080'
+        }
+      }
+    },
+    {
+      url: 'https://resturant-management-system-production.up.railway.app',
+      description: 'Production Server'
+    }
+  ],
   basePath: '/',
-  schemes: ['http'],
+  schemes: ['http', 'https'],
   securityDefinitions: {
     bearerAuth: {
       type: 'apiKey',
@@ -115,7 +131,8 @@ const endpointsFiles = [
   './routes/menu.routes.js',
   './routes/order.routes.js',
   './routes/report.routes.js',
-  './routes/table.routes.js'
+  './routes/table.routes.js',
+  './routes/user.routes.js'
 ];
 
 swaggerAutogen(outputFile, endpointsFiles, doc);

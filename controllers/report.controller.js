@@ -2,6 +2,7 @@ const { prisma } = require('../utils/prisma');
 
 // Submit weekly sales report
 const submitReport = async (req, res) => {
+  // #swagger.tags = ['Report']
   const { salesData } = req.body;
   try {
     const report = await prisma.report.create({ data: salesData });

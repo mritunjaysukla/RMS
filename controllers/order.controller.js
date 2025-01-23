@@ -2,6 +2,7 @@ const { prisma } = require('../utils/prisma');
 
 // Create a new order
 const createOrder = async (req, res) => {
+  // #swagger.tags = ['order']
   const { tableId, items } = req.body;
 
   try {
@@ -31,6 +32,7 @@ const createOrder = async (req, res) => {
 
 // View orders for a table
 const getOrdersByTable = async (req, res) => {
+  // #swagger.tags = ['order']
   const { tableId } = req.params;
 
   try {
@@ -54,6 +56,7 @@ const getOrdersByTable = async (req, res) => {
 
 // Update order status
 const updateOrderStatus = async (req, res) => {
+  // #swagger.tags = ['order']
   const { orderId } = req.params;
   const { status } = req.body; // Example: 'COMPLETED'
 
@@ -79,6 +82,7 @@ const updateOrderStatus = async (req, res) => {
 
 // Get orders for tables managed by the manager
 const getOrders = async (req, res) => {
+  // #swagger.tags = ['order']
   const { managerId } = req.admin; // Assume managerId is set in token
   try {
     // Fetch orders along with payment details
@@ -104,6 +108,7 @@ const getOrders = async (req, res) => {
 
 // Handle table-specific payment
 const handlePayment = async (req, res) => {
+  // #swagger.tags = ['payment']
   const { tableId, amount, status = 'pending' } = req.body; // Default status to "pending"
   try {
     const payment = await prisma.payment.create({

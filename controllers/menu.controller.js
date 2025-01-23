@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 
 // Controller to add a new menu item
 exports.createMenuItem = async (req, res) => {
+  // #swagger.tags = ['Menu']
   const { name, price, description } = req.body;
   const userId = req.user?.id; // Get user ID from auth middleware
 
@@ -40,6 +41,7 @@ exports.createMenuItem = async (req, res) => {
 
 // Read all menu items
 exports.getAllMenuItems = async (req, res) => {
+  // #swagger.tags = ['Menu']
   try {
     const menuItems = await prisma.menu.findMany();
     res.status(200).json({ menuItems });
@@ -51,6 +53,7 @@ exports.getAllMenuItems = async (req, res) => {
 
 // Controller to update an existing menu item
 exports.updateMenuItem = async (req, res) => {
+  // #swagger.tags = ['Menu']
   const menuItemId = parseInt(req.params.id); // Menu item ID from the URL params
   const { name, price, description } = req.body;
 
@@ -86,6 +89,7 @@ exports.updateMenuItem = async (req, res) => {
 
 // Controller to delete a menu item
 exports.deleteMenuItem = async (req, res) => {
+  // #swagger.tags = ['Menu']
   const menuItemId = parseInt(req.params.id); // Menu item ID from the URL params
 
   try {
@@ -114,6 +118,7 @@ exports.deleteMenuItem = async (req, res) => {
 
 // Controller to approve a menu item
 exports.approveMenuItem = async (req, res) => {
+  // #swagger.tags = ['Menu']
   const menuItemId = parseInt(req?.params?.id); // Menu item ID from the URL params
   console.log('menuId', req?.params?.id);
   try {
