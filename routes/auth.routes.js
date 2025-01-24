@@ -1,13 +1,38 @@
 const express = require('express');
-
+const { auth } = require('../middlewares/auth.middleware');
+const validateRole = require('../middlewares/role.middleware');
 const authController = require('../controllers/auth.controller');
 
 const router = express.Router();
-// router.use(auth); // Apply authentication to all routes
-// router.use(authorize(['ADMIN', 'MANAGER'])); // Allow both ADMIN and MANAGER roles
 
-router.post('/login', authController.loginUser);
+router.post('/users', auth, validateRole(['ADMIN']), authController.createUser);
 
-router.post('/register', authController.register);
+router.get(
+  '/users',
+  auth,
+  validateRole(['ADMIN', 'MANAGER']),
+  authController.getUsers
+);
+
+router.get(
+  '/users/:id',
+  auth,
+  validateRole(['ADMIN', 'MANAGER']),
+  authController.getUserById
+);
+
+router.put(
+  '/users/:id',
+  auth,
+  validateRole(['ADMIN']),
+  authController.updateUser
+);
+
+router.delete(
+  '/users/:id',
+  auth,
+  validateRole(['ADMIN']),
+  authController.deleteUser
+);
 
 module.exports = router;

@@ -1,9 +1,9 @@
 const { serve } = require('swagger-ui-express');
 
 const swaggerAutogen = require('swagger-autogen')();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 const doc = {
-  swagger: '2.0',
+  swagger: '3.0',
   info: {
     title: 'Restaurant Management System API',
     description: 'API documentation for Restaurant Management System',
@@ -12,10 +12,10 @@ const doc = {
       email: 'admin@restaurant.com'
     }
   },
-
+  host: 'localhost:8080',
   servers: [
     {
-      url: 'http://localhost:{PORT}',
+      url: 'http://localhost:8080', // This uses a placeholder for PORT
       description: 'Local Development Server',
       variables: {
         PORT: {
@@ -28,6 +28,7 @@ const doc = {
       description: 'Production Server'
     }
   ],
+
   basePath: '/',
   schemes: ['http', 'https'],
   securityDefinitions: {
@@ -126,13 +127,6 @@ const doc = {
   }
 };
 const outputFile = './swagger-output.json';
-const endpointsFiles = [
-  './routes/auth.routes.js',
-  './routes/menu.routes.js',
-  './routes/order.routes.js',
-  './routes/report.routes.js',
-  './routes/table.routes.js',
-  './routes/user.routes.js'
-];
+const endpointsFiles = ['./routes/router.js'];
 
 swaggerAutogen(outputFile, endpointsFiles, doc);
