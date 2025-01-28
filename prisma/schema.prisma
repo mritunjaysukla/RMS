@@ -13,130 +13,180 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  MANAGER
-  WAITER
-}
-
-enum MenuStatus {
-  Pending
-  Approved
-  Rejected
-}
-
-enum OrderStatus {
-  Pending
-  Served
-  Completed
-}
-
-enum PaymentStatus {
-  Pending
-  Completed
-}
-
-enum TableAssignmentRole {
-  Waiter
-  Customer
-}
-
 model User {
   id               Int               @id @default(autoincrement())
   username         String            @unique
   password         String
+  email            String            @unique @default("unknown@example.com") @map("user_email")
+  contact          String            @default("")
+  dob              DateTime? // Date of birth
+  gender           Gender            @default(Male)
   role             Role
-  created_by       User?             @relation("UserCreatedBy", fields: [createdById], references: [id])
   createdById      Int?
-  createdUsers     User[]            @relation("UserCreatedBy")
-  created_at       DateTime          @default(now())
+  created_by       User?             @relation("UserCreatedBy", fields: [createdById], references: [id])
+  created_users    User[]            @relation("UserCreatedBy")
+  createdAt        DateTime          @default(now())
   isActive         Boolean           @default(true)
   Menu             Menu[]            @relation("MenuCreatedBy")
+  MenuApprovals    Menu[]            @relation("MenuApprovedBy")
   Orders           Order[]           @relation("OrderCreatedBy")
   Reports          Report[]          @relation("ReportsManager")
+  SubmittedReports Report[]          @relation("ReportSubmittedBy")
   TableAssignments TableAssignment[] @relation("UserTableAssignment")
+  PasswordResets   PasswordReset[]   @relation("UserPasswordReset")
+  Order            Order[]
+}
+
+model PasswordReset {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation("UserPasswordReset", fields: [userId], references: [id])
+  userId       Int
+  reset_code   String   @unique
+  expires_at   DateTime
+  is_used      Boolean  @default(false)
+  requested_at DateTime @default(now())
 }
 
 model Menu {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String
-  price       Float
-  status      MenuStatus  @default(Pending)
-  isApproved  Boolean     @default(false)
-  created_by  User?       @relation("MenuCreatedBy", fields: [createdById], references: [id])
-  createdById Int?
-  createdAt   DateTime    @default(now())
-  OrderItems  OrderItem[]
+  id           Int          @id @default(autoincrement())
+  name         String
+  created_by   User?        @relation("MenuCreatedBy", fields: [createdById], references: [id])
+  createdById  Int?
+  createdAt    DateTime     @default(now())
+  isApproved   Boolean      @default(false)
+  approved_by  User?        @relation("MenuApprovedBy", fields: [approvedById], references: [id])
+  approvedById Int?
+  status       MenuStatus   @default(Active)
+  MenuItems    MenuItem[]
+  category     FoodCategory @relation(fields: [categoryId], references: [id])
+  categoryId   Int          @default(1)
+  isPopular    Boolean      @default(false)
+}
+
+model MenuItem {
+  id           Int            @id @default(autoincrement())
+  menu         Menu           @relation(fields: [menuId], references: [id])
+  menuId       Int
+  name         String
+  price        Float
+  isAvailable  Boolean        @default(true)
+  category     FoodCategory   @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+  isPopular    Boolean        @default(false)
+  OrderDetails OrderDetails[]
+
+  @@map("menu_items")
+}
+
+model FoodCategory {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  Menu     Menu[]
+  MenuItem MenuItem[]
 }
 
 model Table {
   id           Int               @id @default(autoincrement())
-  table_number Int               @unique
-  qr_code      String
-  payments     Payment[]
-  createdAt    DateTime          @default(now())
-  Assignments  TableAssignment[]
+  table_number String            @unique
+  capacity     Int
+  isAvailable  Boolean           @default(true)
+  assignments  TableAssignment[]
   Orders       Order[]
 }
 
+model TableAssignment {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation("UserTableAssignment", fields: [userId], references: [id])
+  userId     Int
+  table      Table    @relation(fields: [tableId], references: [id])
+  tableId    Int
+  assignedAt DateTime @default(now())
+}
+
 model Order {
-  id          Int         @id @default(autoincrement())
-  table       Table?      @relation(fields: [tableId], references: [id])
-  tableId     Int?
-  created_by  User?       @relation("OrderCreatedBy", fields: [createdById], references: [id])
-  createdById Int?
-  status      OrderStatus @default(Pending)
-  created_at  DateTime    @default(now())
-  OrderItems  OrderItem[]
-  Payments    Payment[]
+  id                   Int             @id @default(autoincrement())
+  order_number         String          @unique
+  table                Table?          @relation(fields: [tableId], references: [id])
+  tableId              Int?
+  waiter               User            @relation(fields: [waiterId], references: [id])
+  waiterId             Int
+  order_date           DateTime        @default(now())
+  order_status         OrderStatus     @default(Preparing)
+  special_instructions String?
+  duration             Int?
+  created_by           User?           @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  createdById          Int?
+  billingDetails       BillingDetails? // Links to BillingDetails
+  order_details        OrderDetails[]
+  reportId             Int?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  Report               Report?         @relation("OrderReport", fields: [reportId], references: [id])
 }
 
-model OrderItem {
-  id         Int   @id @default(autoincrement())
-  order      Order @relation(fields: [orderId], references: [id])
-  orderId    Int
-  menu_item  Menu  @relation(fields: [menuItemId], references: [id])
-  menuItemId Int
-  quantity   Int
-  price      Float
+model OrderDetails {
+  id          Int      @id @default(autoincrement())
+  order       Order    @relation(fields: [orderId], references: [id])
+  orderId     Int
+  menu_item   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId  Int
+  quantity    Int      @default(1)
+  unit_price  Float
+  total_price Float
 }
 
-model Payment {
-  id             Int           @id @default(autoincrement())
-  table          Table?        @relation(fields: [tableId], references: [id])
-  tableId        Int?
-  order          Order         @relation(fields: [orderId], references: [id])
-  orderId        Int
-  amount         Float
-  payment_status PaymentStatus @default(Pending)
-  paid_at        DateTime?     @default(now())
+model BillingDetails {
+  id        Int      @id @default(autoincrement())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   Int      @unique
+  subtotal  Float    @default(0)
+  tax       Float    @default(0)
+  discount  Float    @default(0)
+  total     Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Report {
-  id           Int      @id @default(autoincrement())
-  manager      User     @relation("ReportsManager", fields: [managerId], references: [id])
-  managerId    Int
-  week_start   DateTime
-  week_end     DateTime
-  total_sales  Float
-  submitted_at DateTime @default(now())
+  id            Int          @id @default(autoincrement())
+  manager       User         @relation("ReportsManager", fields: [managerId], references: [id])
+  managerId     Int
+  submitted_to  User         @relation("ReportSubmittedBy", fields: [submittedToId], references: [id])
+  submittedToId Int
+  orders        Order[]      @relation("OrderReport")
+  total_orders  Int          @default(0)
+  total_sales   Float        @default(0)
+  period        ReportPeriod
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
-model TableAssignment {
-  id          Int                 @id @default(autoincrement())
-  table       Table               @relation(fields: [tableId], references: [id])
-  tableId     Int
-  user        User                @relation("UserTableAssignment", fields: [userId], references: [id])
-  userId      Int
-  role        TableAssignmentRole
-  assigned_at DateTime            @default(now())
+enum Role {
+  Admin
+  Manager
+  Waiter
 }
 
-model Audit {
-  id        Int      @id @default(autoincrement())
-  adminId   Int
-  action    String
-  details   String
-  createdAt DateTime @default(now())
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum MenuStatus {
+  Active
+  Pending
+  Rejected
+}
+
+enum OrderStatus {
+  Preparing
+  Served
+  Rejected
+}
+
+enum ReportPeriod {
+  Daily
+  Weekly
+  Monthly
 }
