@@ -5,22 +5,17 @@
     "description": "API documentation for Restaurant Management System",
     "version": "1.0.0",
     "contact": {
-      "email": "admin@restaurant.com"
+      "email": "mritunjaysukla07@gmail.com"
     }
   },
   "host": "localhost:8080",
   "servers": [
     {
       "url": "http://localhost:8080",
-      "description": "Local Development Server",
-      "variables": {
-        "PORT": {
-          "default": "8080"
-        }
-      }
+      "description": "Local Development Server"
     },
     {
-      "url": "https://resturant-management-system-production.up.railway.app",
+      "url": "https://restaurant-management-system-production.up.railway.app",
       "description": "Production Server"
     }
   ],
@@ -820,28 +815,148 @@
     "User": {
       "type": "object",
       "properties": {
-        "id": {
+        "type": {
           "type": "string",
-          "example": "integer"
+          "example": "object"
         },
-        "username": {
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "username": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "password": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "email": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "contact": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "dob": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "gender": {
+              "$ref": "#/definitions/Gender"
+            },
+            "role": {
+              "$ref": "#/definitions/Role"
+            },
+            "createdById": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "isActive": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Role": {
+      "type": "object",
+      "properties": {
+        "type": {
           "type": "string",
           "example": "string"
         },
-        "role": {
-          "type": "object",
-          "properties": {
-            "enum": {
-              "type": "array",
-              "example": [
-                "ADMIN",
-                "MANAGER",
-                "WAITER"
-              ],
-              "items": {
-                "type": "string"
-              }
-            }
+        "enum": {
+          "type": "array",
+          "example": [
+            "Admin",
+            "Manager",
+            "Waiter"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Gender": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Male",
+            "Female",
+            "Other"
+          ],
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -856,47 +971,9 @@
         "enum": {
           "type": "array",
           "example": [
+            "Active",
             "Pending",
-            "Approved",
             "Rejected"
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "PaymentStatus": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Pending",
-            "Completed"
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "TableAssignmentRole": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Waiter",
-            "Customer"
           ],
           "items": {
             "type": "string"
@@ -914,8 +991,9 @@
         "enum": {
           "type": "array",
           "example": [
-            "Pending",
-            "Completed"
+            "Preparing",
+            "Served",
+            "Rejected"
           ],
           "items": {
             "type": "string"
@@ -923,7 +1001,27 @@
         }
       }
     },
-    "MenuItem": {
+    "ReportPeriod": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Daily",
+            "Weekly",
+            "Monthly"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Menu": {
       "type": "object",
       "properties": {
         "type": {
@@ -951,27 +1049,6 @@
                 }
               }
             },
-            "price": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "number"
-                }
-              }
-            },
-            "status": {
-              "$ref": "#/definitions/MenuStatus"
-            },
-            "isApproved": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "boolean"
-                }
-              }
-            },
             "createdById": {
               "type": "object",
               "properties": {
@@ -991,6 +1068,154 @@
                 "format": {
                   "type": "string",
                   "example": "date-time"
+                }
+              }
+            },
+            "isApproved": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            },
+            "approvedById": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "status": {
+              "$ref": "#/definitions/MenuStatus"
+            },
+            "categoryId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "isPopular": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "MenuItem": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "menuId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "price": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            },
+            "isAvailable": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            },
+            "categoryId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "isPopular": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "FoodCategory": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
                 }
               }
             }
@@ -1022,20 +1247,70 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "qr_code": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
                   "example": "string"
                 }
               }
             },
-            "createdAt": {
+            "capacity": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "isAvailable": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "TableAssignment": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "userId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "tableId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "assignedAt": {
               "type": "object",
               "properties": {
                 "type": {
@@ -1071,6 +1346,15 @@
                 }
               }
             },
+            "order_number": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
             "tableId": {
               "type": "object",
               "properties": {
@@ -1080,15 +1364,90 @@
                 }
               }
             },
-            "items": {
+            "waiterId": {
               "type": "object",
               "properties": {
                 "type": {
                   "type": "string",
-                  "example": "array"
+                  "example": "integer"
+                }
+              }
+            },
+            "order_date": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
                 },
-                "items": {
-                  "$ref": "#/definitions/OrderItem"
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "order_status": {
+              "$ref": "#/definitions/OrderStatus"
+            },
+            "special_instructions": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "duration": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "createdById": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "reportId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "updatedAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
                 }
               }
             }
@@ -1096,7 +1455,7 @@
         }
       }
     },
-    "OrderItem": {
+    "OrderDetails": {
       "type": "object",
       "properties": {
         "type": {
@@ -1142,7 +1501,16 @@
                 }
               }
             },
-            "price": {
+            "unit_price": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            },
+            "total_price": {
               "type": "object",
               "properties": {
                 "type": {
@@ -1155,7 +1523,7 @@
         }
       }
     },
-    "Payment": {
+    "BillingDetails": {
       "type": "object",
       "properties": {
         "type": {
@@ -1183,16 +1551,7 @@
                 }
               }
             },
-            "tableId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "amount": {
+            "subtotal": {
               "type": "object",
               "properties": {
                 "type": {
@@ -1201,10 +1560,47 @@
                 }
               }
             },
-            "status": {
-              "$ref": "#/definitions/PaymentStatus"
+            "tax": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            },
+            "discount": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            },
+            "total": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
             },
             "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "updatedAt": {
               "type": "object",
               "properties": {
                 "type": {
@@ -1221,7 +1617,7 @@
         }
       }
     },
-    "TableAssignment": {
+    "Report": {
       "type": "object",
       "properties": {
         "type": {
@@ -1240,7 +1636,86 @@
                 }
               }
             },
-            "tableId": {
+            "managerId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "submittedToId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "total_orders": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "total_sales": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                }
+              }
+            },
+            "period": {
+              "$ref": "#/definitions/ReportPeriod"
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "updatedAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "PasswordReset": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
               "type": "object",
               "properties": {
                 "type": {
@@ -1258,10 +1733,38 @@
                 }
               }
             },
-            "role": {
-              "$ref": "#/definitions/TableAssignmentRole"
+            "reset_code": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
             },
-            "assignedAt": {
+            "expires_at": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "is_used": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                }
+              }
+            },
+            "requested_at": {
               "type": "object",
               "properties": {
                 "type": {

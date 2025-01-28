@@ -4,3 +4,4 @@ node_modules
 .prettierrc
 .eslint.config.mjs
 yarn.lock
+config/swagger-output.json

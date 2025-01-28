@@ -50,7 +50,6 @@ const register = async (req, res) => {
     });
   }
 };
-
 const loginUser = async (req, res) => {
   // #swagger.tags = ['User']
   const { username, password } = req.body;
