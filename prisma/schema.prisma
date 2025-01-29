@@ -17,7 +17,7 @@ model User {
   id               Int               @id @default(autoincrement())
   username         String            @unique
   password         String
-  email            String            @unique @default("unknown@example.com") @map("user_email")
+  email            String            @unique @map("user_email")
   contact          String            @default("")
   dob              DateTime? // Date of birth
   gender           Gender            @default(Male)
