@@ -1,153 +1,267 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { prisma } = require('../utils/prisma');
 
-// Controller to add a new menu item
-exports.createMenuItem = async (req, res) => {
+// Create Menu with Items in one request (Manager only)
+exports.createMenuWithItems = async (req, res) => {
   // #swagger.tags = ['Menu']
-  const { name, price, description } = req.body;
-  const userId = req.user?.id; // Get user ID from auth middleware
+  const { name, categoryId, items } = req.body;
+  const userId = req.user.id;
 
   try {
-    // Validate required fields
-    if (!name || !price || !description) {
+    if (!name || !categoryId || !items?.length) {
       return res.status(400).json({
-        message: 'Name, price, and description are required'
+        message: 'Name, category ID, and at least one menu item are required'
       });
     }
 
-    const newMenuItem = await prisma.menu.create({
-      data: {
-        name,
-        price: parseFloat(price),
-        description,
-        isApproved: false,
-        createdById: userId
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the menu
+      const menu = await tx.menu.create({
+        data: {
+          name,
+          categoryId: parseInt(categoryId),
+          createdById: userId,
+          status: 'Pending',
+          isApproved: false
+        }
+      });
+
+      // Create menu items
+      const menuItems = await Promise.all(
+        items.map((item) =>
+          tx.menuItem.create({
+            data: {
+              menuId: menu.id,
+              name: item.name,
+              price: parseFloat(item.price),
+              categoryId: parseInt(item.categoryId),
+              isPopular: item.isPopular || false,
+              isAvailable:
+                item.isAvailable !== undefined ? item.isAvailable : true
+            }
+          })
+        )
+      );
+
+      return { menu, menuItems };
+    });
+
+    res.status(201).json(result);
+  } catch (error) {
+    console.error('Error creating menu with items:', error);
+    res.status(500).json({ message: 'Failed to create menu', error });
+  }
+};
+
+// Get Active Menus with Items and Categories
+exports.getActiveMenus = async (req, res) => {
+  // #swagger.tags = ['Menu']
+  try {
+    const activeMenus = await prisma.menu.findMany({
+      where: {
+        status: 'Active',
+        isApproved: true
+      },
+      include: {
+        MenuItems: {
+          where: { isAvailable: true },
+          include: { category: true }
+        },
+        category: true,
+        approved_by: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(activeMenus);
+  } catch (error) {
+    console.error('Error fetching active menus:', error);
+    res.status(500).json({ message: 'Failed to fetch menus', error });
+  }
+};
+
+// Get Popular Menus and Items
+exports.getPopular = async (req, res) => {
+  // #swagger.tags = ['Menu']
+  try {
+    // Get popular menus
+    const popularMenus = await prisma.menu.findMany({
+      where: {
+        status: 'Active',
+        isApproved: true,
+        isPopular: true
+      },
+      include: {
+        MenuItems: {
+          where: { isAvailable: true },
+          include: { category: true }
+        },
+        category: true
       }
     });
 
-    res.status(201).json({
-      success: true,
-      message: 'Menu item added successfully',
-      menuItem: newMenuItem
-    });
-  } catch (error) {
-    console.error('Error adding menu item:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to add menu item'
-    });
-  }
-};
-
-// Read all menu items
-exports.getAllMenuItems = async (req, res) => {
-  // #swagger.tags = ['Menu']
-  try {
-    const menuItems = await prisma.menu.findMany();
-    res.status(200).json({ menuItems });
-  } catch (error) {
-    console.error('Error fetching menu items:', error);
-    res.status(500).json({ message: 'Failed to fetch menu items', error });
-  }
-};
-
-// Controller to update an existing menu item
-exports.updateMenuItem = async (req, res) => {
-  // #swagger.tags = ['Menu']
-  const menuItemId = parseInt(req.params.id); // Menu item ID from the URL params
-  const { name, price, description } = req.body;
-
-  try {
-    // Check if the menu item exists
-    const menuItem = await prisma.menu.findUnique({
-      where: { id: menuItemId }
-    });
-
-    if (!menuItem) {
-      return res.status(404).json({ message: 'Menu item not found' });
-    }
-
-    // Update the menu item
-    const updatedMenuItem = await prisma.menu.update({
-      where: { id: menuItemId },
-      data: {
-        name: name || menuItem.name, // Update only if provided
-        price: price || menuItem.price,
-        description: description || menuItem.description
+    // Get popular items across all menus
+    const popularItems = await prisma.menuItem.findMany({
+      where: {
+        isPopular: true,
+        isAvailable: true,
+        menu: {
+          status: 'Active',
+          isApproved: true
+        }
+      },
+      include: {
+        menu: true,
+        category: true
       }
     });
 
-    res.status(200).json({
-      message: 'Menu item updated successfully',
-      menuItem: updatedMenuItem
+    res.json({
+      popularMenus,
+      popularItems
     });
   } catch (error) {
-    console.error('Error updating menu item:', error);
-    res.status(500).json({ message: 'Failed to update menu item', error });
+    console.error('Error fetching popular content:', error);
+    res.status(500).json({ message: 'Failed to fetch popular content', error });
   }
 };
 
-// Controller to delete a menu item
-exports.deleteMenuItem = async (req, res) => {
+// Approve Menu (Admin only)
+exports.approveMenu = async (req, res) => {
   // #swagger.tags = ['Menu']
-  const menuItemId = parseInt(req.params.id); // Menu item ID from the URL params
+  const menuId = parseInt(req.params.id);
+  const userId = req.user.id;
 
   try {
-    // Check if the menu item exists
-    const menuItem = await prisma.menuItem.findUnique({
-      where: { id: menuItemId }
+    const updatedMenu = await prisma.menu.update({
+      where: { id: menuId },
+      data: {
+        status: 'Active',
+        isApproved: true,
+        approvedById: userId
+      },
+      include: {
+        MenuItems: {
+          include: { category: true }
+        },
+        category: true,
+        approved_by: true
+      }
     });
 
-    if (!menuItem) {
-      return res.status(404).json({ message: 'Menu item not found' });
-    }
-
-    // Delete the menu item
-    await prisma.menuItem.delete({
-      where: { id: menuItemId }
-    });
-
-    res.status(200).json({
-      message: 'Menu item deleted successfully'
-    });
+    res.json(updatedMenu);
   } catch (error) {
-    console.error('Error deleting menu item:', error);
-    res.status(500).json({ message: 'Failed to delete menu item', error });
+    console.error('Error approving menu:', error);
+    res.status(500).json({ message: 'Failed to approve menu', error });
   }
 };
 
-// Controller to approve a menu item
-exports.approveMenuItem = async (req, res) => {
+// Get Menus by Food Category
+exports.getMenusByFoodCategory = async (req, res) => {
   // #swagger.tags = ['Menu']
-  const menuItemId = parseInt(req?.params?.id); // Menu item ID from the URL params
-  console.log('menuId', req?.params?.id);
+  const { categoryId } = req.params;
+
   try {
-    // Fetch the menu item by ID
-    const menuItem = await prisma.menu.findUnique({
-      where: { id: menuItemId }
+    const menus = await prisma.menu.findMany({
+      where: {
+        status: 'Active',
+        isApproved: true,
+        categoryId: parseInt(categoryId)
+      },
+      include: {
+        MenuItems: {
+          where: { isAvailable: true },
+          include: { category: true }
+        },
+        category: true
+      }
     });
 
-    if (!menuItem) {
-      return res.status(404).json({ message: 'Menu item not found' });
+    res.json(menus);
+  } catch (error) {
+    console.error('Error fetching menus by category:', error);
+    res.status(500).json({ message: 'Failed to fetch menus', error });
+  }
+};
+// Get Pending Menus (Admin only)
+exports.getPendingMenus = async (req, res) => {
+  // #swagger.tags = ['Menu']
+  try {
+    const pendingMenus = await prisma.menu.findMany({
+      where: {
+        status: 'Pending',
+        isApproved: false
+      },
+      include: {
+        MenuItems: true,
+        category: true,
+        created_by: true
+      }
+    });
+    res.json(pendingMenus);
+  } catch (error) {
+    console.error('Error fetching pending menus:', error);
+    res.status(500).json({ message: 'Failed to fetch pending menus', error });
+  }
+};
+
+// Get Rejected Menus (Admin only)
+exports.getRejectedMenus = async (req, res) => {
+  // #swagger.tags = ['Menu']
+  try {
+    const rejectedMenus = await prisma.menu.findMany({
+      where: {
+        status: 'Rejected',
+        isApproved: false
+      },
+      include: {
+        MenuItems: true,
+        category: true,
+        created_by: true,
+        approved_by: true
+      }
+    });
+    res.json(rejectedMenus);
+  } catch (error) {
+    console.error('Error fetching rejected menus:', error);
+    res.status(500).json({ message: 'Failed to fetch rejected menus', error });
+  }
+};
+
+// Update the approveMenu controller to handle rejection
+exports.approveOrRejectMenu = async (req, res) => {
+  // #swagger.tags = ['Menu']
+  const menuId = parseInt(req.params.id);
+  const userId = req.user.id;
+  const { status } = req.body;
+
+  try {
+    if (!['Active', 'Rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
     }
 
-    if (menuItem.isApproved) {
-      return res.status(400).json({ message: 'Menu item is already approved' });
-    }
-
-    // Approve the menu item
-    const approvedMenuItem = await prisma.menu.update({
-      where: { id: menuItemId },
-
-      data: { isApproved: true, status: 'Approved' }
+    const updatedMenu = await prisma.menu.update({
+      where: { id: menuId },
+      data: {
+        status: status,
+        isApproved: status === 'Active',
+        approvedById: userId
+      },
+      include: {
+        MenuItems: {
+          include: { category: true }
+        },
+        category: true,
+        approved_by: true,
+        created_by: true
+      }
     });
 
-    res.status(200).json({
-      message: 'Menu item approved successfully',
-      menuItem: approvedMenuItem
+    res.json({
+      message: `Menu ${status === 'Active' ? 'approved' : 'rejected'} successfully`,
+      menu: updatedMenu
     });
   } catch (error) {
-    console.error('Error approving menu item:', error);
-    res.status(500).json({ message: 'Failed to approve menu item', error });
+    console.error('Error updating menu status:', error);
+    res.status(500).json({ message: 'Failed to update menu status', error });
   }
 };
