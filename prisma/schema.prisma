@@ -19,7 +19,7 @@ model User {
   password         String
   email            String            @unique @map("user_email")
   contact          String            @default("")
-  dob              DateTime? // Date of birth
+  dob              DateTime          @db.Date
   gender           Gender            @default(Male)
   role             Role
   createdById      Int?
