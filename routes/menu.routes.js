@@ -4,33 +4,34 @@ const validateRole = require('../middlewares/role.middleware');
 const menuController = require('../controllers/menu.controller');
 
 const router = express.Router();
+
 router.get('/menus', menuController.getMenus);
 
 router.post(
   '/menus',
   auth,
-  validateRole('Manager'),
+  validateRole(['Manager']),
   menuController.createMenuWithItems
 );
 
 router.patch(
   '/menus/:id',
   auth,
-  validateRole('Admin'),
+  validateRole(['Admin']),
   menuController.updateMenu
 );
 
 router.put(
   '/menus',
   auth,
-  validateRole('Admin'),
+  validateRole(['Admin']),
   menuController.updateMenuStatus
 );
 
 router.delete(
   '/menus/:id',
   auth,
-  validateRole('Admin'),
+  validateRole(['Admin']),
   menuController.deleteMenu
 );
 module.exports = router;
