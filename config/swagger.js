@@ -66,6 +66,50 @@ const doc = {
         is_used: { type: 'boolean' },
         requested_at: { type: 'string', format: 'date-time' }
       }
+    },
+    Menu: {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        categoryId: { type: 'integer' },
+        createdById: { type: 'integer' },
+        status: { $ref: '#/definitions/MenuStatus' },
+        isApproved: { type: 'boolean' },
+        approvedById: { type: 'integer' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        MenuItems: { type: 'array', items: { $ref: '#/definitions/MenuItem' } },
+        category: { $ref: '#/definitions/FoodCategory' },
+        created_by: { $ref: '#/definitions/User' },
+        approved_by: { $ref: '#/definitions/User' }
+      }
+    },
+    MenuItem: {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        price: { type: 'number', format: 'float' },
+        isAvailable: { type: 'boolean' },
+        isPopular: { type: 'boolean' },
+        categoryId: { type: 'integer' },
+        menuId: { type: 'integer' },
+        category: { $ref: '#/definitions/FoodCategory' }
+      }
+    },
+    FoodCategory: {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        Menu: { type: 'array', items: { $ref: '#/definitions/Menu' } },
+        MenuItem: { type: 'array', items: { $ref: '#/definitions/MenuItem' } }
+      }
+    },
+    MenuStatus: {
+      type: 'string',
+      enum: ['Active', 'Pending', 'Rejected']
     }
   },
   paths: {
@@ -292,11 +336,343 @@ const doc = {
           500: { description: 'Failed to delete user' }
         }
       }
+    },
+    '/menus': {
+      post: {
+        tags: ['Menu'],
+        summary: 'Create a new menu with items',
+        description:
+          'Creates a new menu with items. Only accessible by Managers.',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  categoryId: { type: 'integer', example: 1 },
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        name: { type: 'string', example: 'Grilled Salmon' },
+                        price: {
+                          type: 'number',
+                          format: 'float',
+                          example: 24.99
+                        },
+                        categoryId: { type: 'integer', example: 1 },
+                        isPopular: { type: 'boolean', example: true },
+                        isAvailable: { type: 'boolean', example: true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          201: {
+            description: 'Menu created successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    menu: { $ref: '#/definitions/Menu' },
+                    menuItems: {
+                      type: 'array',
+                      items: { $ref: '#/definitions/MenuItem' }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          400: { description: 'Invalid input or category does not exist' },
+          500: { description: 'Failed to create menu' }
+        }
+      },
+      get: {
+        tags: ['Menu'],
+        summary: 'Get all menus with filters',
+        description:
+          'Fetches menus with optional filters (status, categoryId, isPopular).',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'status',
+            in: 'query',
+            description: 'Filter by menu status (Active, Pending, Rejected)',
+            schema: { $ref: '#/definitions/MenuStatus' }
+          },
+          {
+            name: 'categoryId',
+            in: 'query',
+            description: 'Filter by category ID',
+            schema: { type: 'integer' }
+          },
+          {
+            name: 'isPopular',
+            in: 'query',
+            description: 'Filter by popularity (true/false)',
+            schema: { type: 'boolean' }
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Menus fetched successfully',
+            content: {
+              'application/json': {
+                schema: { type: 'array', items: { $ref: '#/definitions/Menu' } }
+              }
+            }
+          },
+          500: { description: 'Failed to fetch menus' }
+        }
+      }
+    },
+    '/menus/{id}/status': {
+      patch: {
+        tags: ['Menu'],
+        summary: 'Approve or reject a menu',
+        description:
+          'Updates the status of a menu (Active or Rejected). Only accessible by Admins.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Menu ID',
+            schema: { type: 'integer' }
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  status: { $ref: '#/definitions/MenuStatus' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Menu status updated successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/definitions/Menu' }
+              }
+            }
+          },
+          400: { description: 'Invalid status or menu cannot be updated' },
+          404: { description: 'Menu not found' },
+          500: { description: 'Failed to update menu status' }
+        }
+      }
+    },
+    '/menus/{id}': {
+      put: {
+        tags: ['Menu'],
+        summary: 'Update a menu',
+        description:
+          'Updates menu details (name, categoryId, isPopular). Only accessible by Managers.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Menu ID',
+            schema: { type: 'integer' }
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', example: 'Summer Menu' },
+                  categoryId: { type: 'integer', example: 1 },
+                  isPopular: { type: 'boolean', example: true }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Menu updated successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/definitions/Menu' }
+              }
+            }
+          },
+          404: { description: 'Menu not found' },
+          500: { description: 'Failed to update menu' }
+        }
+      },
+      delete: {
+        tags: ['Menu'],
+        summary: 'Delete a menu',
+        description: 'Deletes a menu by ID. Only accessible by Managers.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Menu ID',
+            schema: { type: 'integer' }
+          }
+        ],
+        responses: {
+          200: { description: 'Menu deleted successfully' },
+          404: { description: 'Menu not found' },
+          500: { description: 'Failed to delete menu' }
+        }
+      }
+    },
+
+    // Category Endpoints
+    '/categories': {
+      post: {
+        tags: ['Category'],
+        summary: 'Create a new category',
+        description: 'Creates a new food category. Only accessible by Admins.',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', example: 'Desserts' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          201: {
+            description: 'Category created successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/definitions/FoodCategory' }
+              }
+            }
+          },
+          400: { description: 'Category name is required' },
+          500: { description: 'Failed to create category' }
+        }
+      },
+      get: {
+        tags: ['Category'],
+        summary: 'Get all categories',
+        description: 'Fetches all food categories.',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Categories fetched successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/definitions/FoodCategory' }
+                }
+              }
+            }
+          },
+          500: { description: 'Failed to fetch categories' }
+        }
+      }
+    },
+    '/categories/{id}': {
+      put: {
+        tags: ['Category'],
+        summary: 'Update a category',
+        description:
+          'Updates a food category by ID. Only accessible by Admins.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Category ID',
+            schema: { type: 'integer' }
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', example: 'Sweet Treats' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Category updated successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/definitions/FoodCategory' }
+              }
+            }
+          },
+          400: { description: 'Category name is required' },
+          404: { description: 'Category not found' },
+          500: { description: 'Failed to update category' }
+        }
+      },
+      delete: {
+        tags: ['Category'],
+        summary: 'Delete a category',
+        description:
+          'Deletes a food category by ID. Only accessible by Admins.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Category ID',
+            schema: { type: 'integer' }
+          }
+        ],
+        responses: {
+          200: { description: 'Category deleted successfully' },
+          404: { description: 'Category not found' },
+          500: { description: 'Failed to delete category' }
+        }
+      }
     }
   }
 };
 
 const outputFile = './swagger-output.json';
-const endpointsFiles = ['./routes/user.routes.js', './routes/auth.routes.js'];
+const endpointsFiles = [
+  './routes/user.routes.js',
+  './routes/auth.routes.js',
+  './routes/menu.routes.js',
+  './routes/FoodCategory.routes.js'
+];
 
 swaggerAutogen(outputFile, endpointsFiles, doc);

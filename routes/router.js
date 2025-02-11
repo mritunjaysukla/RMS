@@ -9,6 +9,7 @@ const orderRoutes = require('./order.routes');
 const reportsRoutes = require('./report.routes');
 const tableRoutes = require('./table.routes');
 const authRoutes = require('./auth.routes');
+const categoryRoutes = require('./category.routes');
 
 module.exports = (app) => {
   app.use(express.json());
@@ -20,6 +21,8 @@ module.exports = (app) => {
   app.use('/api', userRoutes);
 
   app.use('/api', menuRoutes);
+
+  app.use('/api', categoryRoutes);
 
   app.use('/api', orderRoutes);
 

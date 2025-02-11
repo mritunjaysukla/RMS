@@ -2,18 +2,17 @@ const { prisma } = require('../utils/prisma');
 
 // Create Menu with Items (Manager only)
 exports.createMenuWithItems = async (req, res) => {
-  // #swagger.tags = ['Menu']
   const { categoryId, items } = req.body;
   const userId = req.user.id;
 
   try {
     if (!categoryId || !items?.length) {
       return res.status(400).json({
-        message: 'Name, category ID, and at least one menu item are required'
+        message: 'Category ID and at least one menu item are required'
       });
     }
 
-    // Check if categoryId exists in FoodCategory
+    // ✅ Check if the main category exists
     const categoryExists = await prisma.foodCategory.findUnique({
       where: { id: parseInt(categoryId) }
     });
@@ -21,14 +20,14 @@ exports.createMenuWithItems = async (req, res) => {
     if (!categoryExists) {
       return res
         .status(400)
-        .json({ message: 'Invalid categoryId. Category does not exist.' });
+        .json({ message: `Category ID ${categoryId} does not exist` });
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // Create the menu
+      // ✅ Create the menu
       const menu = await tx.menu.create({
         data: {
-          name: `Menu-${Date.now()}`, // Assign a default name
+          name: `Menu-${Date.now()}`,
           categoryId: parseInt(categoryId),
           createdById: userId,
           status: 'Pending',
@@ -36,10 +35,18 @@ exports.createMenuWithItems = async (req, res) => {
         }
       });
 
-      // Create menu items
+      // ✅ Check if each menu item's category exists before creating them
       const menuItems = await Promise.all(
-        items.map((item) =>
-          tx.menuItem.create({
+        items.map(async (item) => {
+          const itemCategoryExists = await tx.foodCategory.findUnique({
+            where: { id: parseInt(item.categoryId) }
+          });
+
+          if (!itemCategoryExists) {
+            throw new Error(`Category ID ${item.categoryId} does not exist`);
+          }
+
+          return tx.menuItem.create({
             data: {
               menuId: menu.id,
               name: item.name,
@@ -49,8 +56,8 @@ exports.createMenuWithItems = async (req, res) => {
               isAvailable:
                 item.isAvailable !== undefined ? item.isAvailable : true
             }
-          })
-        )
+          });
+        })
       );
 
       return { menu, menuItems };
@@ -59,7 +66,9 @@ exports.createMenuWithItems = async (req, res) => {
     res.status(201).json(result);
   } catch (error) {
     console.error('Error creating menu with items:', error);
-    res.status(500).json({ message: 'Failed to create menu', error });
+    res
+      .status(500)
+      .json({ message: 'Failed to create menu', error: error.message });
   }
 };
 
@@ -106,22 +115,44 @@ exports.updateMenuStatus = async (req, res) => {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
+    // Check if menu exists
+    const menu = await prisma.menu.findUnique({
+      where: { id: menuId },
+      include: { created_by: true } // Fetch manager details
+    });
+
+    if (!menu) {
+      return res.status(404).json({ message: 'Menu not found' });
+    }
+
+    // Ensure menu is in 'Pending' or 'Rejected' state
+    if (!['Pending', 'Rejected'].includes(menu.status)) {
+      return res
+        .status(400)
+        .json({ message: 'Only Pending or Rejected menus can be updated' });
+    }
+
+    // Update menu status
     const updatedMenu = await prisma.menu.update({
       where: { id: menuId },
       data: {
-        status: status,
+        status,
         isApproved: status === 'Active',
         approvedById: userId
       },
       include: {
-        MenuItems: {
-          include: { category: true }
-        },
+        MenuItems: { include: { category: true } },
         category: true,
         approved_by: true,
         created_by: true
       }
     });
+
+    // 🔹 Call the notification function but don't `await` it inside try-catch
+    sendNotification(
+      menu.created_by.id,
+      `Your menu has been ${status.toLowerCase()} by an admin.`
+    ).catch((error) => console.error('Error sending notification:', error));
 
     res.json({
       message: `Menu ${status === 'Active' ? 'approved' : 'rejected'} successfully`,
@@ -133,6 +164,20 @@ exports.updateMenuStatus = async (req, res) => {
   }
 };
 
+// Async function to send notification
+async function sendNotification(userId, message) {
+  try {
+    await prisma.notification.create({
+      data: {
+        userId,
+        message
+      }
+    });
+    console.log(`Notification sent to user ${userId}: ${message}`);
+  } catch (error) {
+    console.error('Error sending notification:', error);
+  }
+}
 // Update Menu
 exports.updateMenu = async (req, res) => {
   // #swagger.tags = ['Menu']

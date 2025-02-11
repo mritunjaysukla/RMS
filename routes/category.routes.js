@@ -8,19 +8,22 @@ const router = express.Router();
 router.post(
   '/categories',
   auth,
-  validateRole(['Admin']),
+  validateRole(['Manager']),
   categoryController.createCategory
 );
-router.get('/categories', auth, categoryController.getAllCategories);
+router.get('/categories', categoryController.getAllCategories);
+
 router.put(
   '/categories/:id',
   auth,
-  validateRole(['Admin']),
+  validateRole(['Manager']),
   categoryController.updateCategory
 );
+
 router.delete(
   '/categories/:id',
   auth,
-  validateRole(['Admin']),
+  validateRole(['Manager']),
   categoryController.deleteCategory
 );
+module.exports = router;

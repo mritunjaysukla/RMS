@@ -1,8 +1,9 @@
 const { prisma } = require('../utils/prisma');
 
-// Create Category (Admin only)
+// Create Category (Admin on
+// ly)
 exports.createCategory = async (req, res) => {
-  // #swagger.tags = ['Category']
+  // #swagger.tags = ['Food Category']
   const { name } = req.body;
 
   try {
@@ -23,7 +24,7 @@ exports.createCategory = async (req, res) => {
 
 // Get All Categories
 exports.getAllCategories = async (req, res) => {
-  // #swagger.tags = ['Category']
+  // #swagger.tags = ['Food Category']
   try {
     const categories = await prisma.foodCategory.findMany({
       orderBy: { name: 'asc' }
@@ -38,7 +39,7 @@ exports.getAllCategories = async (req, res) => {
 
 // Update Category (Admin only)
 exports.updateCategory = async (req, res) => {
-  // #swagger.tags = ['Category']
+  // #swagger.tags = ['Food Category']
   const categoryId = parseInt(req.params.id);
   const { name } = req.body;
 
@@ -61,7 +62,7 @@ exports.updateCategory = async (req, res) => {
 
 // Delete Category (Admin only)
 exports.deleteCategory = async (req, res) => {
-  // #swagger.tags = ['Category']
+  // #swagger.tags = ['Food Category']
   const categoryId = parseInt(req.params.id);
 
   try {
