@@ -18,7 +18,8 @@ const transporter = nodemailer.createTransport({
 
 const register = async (req, res) => {
   // #swagger.tags = ['User']
-  const { username, password, role, email, contact, dob, gender } = req.body;
+  const { username, password, email, contact, dob, gender } = req.body;
+  const role = 'Waiter'; // Force role to "Waiter"
 
   try {
     // Check if the email is already registered
@@ -36,12 +37,12 @@ const register = async (req, res) => {
     // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    // Create new user with role "Waiter"
     const user = await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
-        role,
+        role, // Forced to "Waiter"
         email,
         contact,
         dob: new Date(dob), // Ensure dob is stored as a Date object
@@ -52,7 +53,7 @@ const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
+      message: 'User registered successfully as Waiter',
       user: {
         id: user.id,
         username: user.username,

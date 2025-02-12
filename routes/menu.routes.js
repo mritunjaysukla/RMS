@@ -22,7 +22,7 @@ router.patch(
 );
 
 router.put(
-  '/menus',
+  '/menus/:id/status',
   auth,
   validateRole(['Admin']),
   menuController.updateMenuStatus

@@ -4,52 +4,89 @@ const { prisma } = require('../utils/prisma');
 const SALT_ROUNDS = 10;
 
 // Create User
+
+// Create User (Admin Only)
 exports.createUser = async (req, res) => {
   // #swagger.tags = ['Auth']
   const { username, password, role, email, dob, gender, contact } = req.body;
 
-  // Validate required fields
-  if (
-    !username ||
-    !password ||
-    !role ||
-    !email ||
-    !dob ||
-    !gender ||
-    !contact
-  ) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
   try {
-    // Check if the user already exists
-    const existingUser = await prisma.user.findUnique({ where: { username } });
+    // Ensure only admins can create users
+    if (req.user.role !== 'Admin') {
+      return res
+        .status(403)
+        .json({ message: 'Access denied. Only admins can create users.' });
+    }
+
+    // Validate required fields
+    if (
+      !username ||
+      !password ||
+      !role ||
+      !email ||
+      !dob ||
+      !gender ||
+      !contact
+    ) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Validate role (assuming allowed roles are 'Admin', 'Manager', 'User')
+    const allowedRoles = ['Admin', 'Manager', 'User'];
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({ message: 'Invalid role provided' });
+    }
+
+    // Check if the email is already registered
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: 'Username already exists' });
+      return res.status(400).json({ message: 'Email already exists' });
     }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Create the new user
+    // Convert dob to Date object
+    const formattedDob = new Date(dob);
+    if (isNaN(formattedDob)) {
+      return res.status(400).json({ message: 'Invalid date of birth format' });
+    }
+
+    // Create the new user with isApproved: true (since admin is adding them)
     const newUser = await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
         role,
         email,
-        dob: new Date(dob), // Ensure the date is saved correctly
+        dob: formattedDob,
         gender,
-        contact
+        contact,
+        isApproved: true // Since admin is adding, the user is already approved
       }
     });
 
-    res
-      .status(201)
-      .json({ message: 'User created successfully', user: newUser });
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully.',
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role,
+        isApproved: newUser.isApproved
+      }
+    });
   } catch (error) {
     console.error('Error creating user:', error);
-    res.status(500).json({ message: 'Error creating user', error });
+
+    if (error.code === 'P2002') {
+      return res.status(400).json({ message: 'Email must be unique' });
+    }
+
+    res
+      .status(500)
+      .json({ message: 'Error creating user', error: error.message });
   }
 };
 
