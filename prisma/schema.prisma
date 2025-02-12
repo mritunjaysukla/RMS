@@ -163,16 +163,18 @@ model Report {
 }
 
 model StaffOnDuty {
-  id        Int         @id @default(autoincrement())
-  user      User        @relation(fields: [userId], references: [id])
-  userId    Int
-  startTime DateTime    @default(now()) // Time when the staff member started duty
-  endTime   DateTime? // Time when the staff member ended duty (nullable)
-  status    StaffStatus @default(Active) // Active, Inactive, or OnBreak
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  startTime     DateTime    @default(now())
+  endTime       DateTime?
+  status        StaffStatus @default(Active)
+  totalEarnings Float       @default(0) // Total earnings during this duty session
+  workingHours  Float       @default(0) // Hours worked during this session
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  @@index([userId]) // Index for faster lookups
+  @@index([userId])
 }
 
 enum StaffStatus {

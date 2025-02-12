@@ -122,28 +122,92 @@ exports.getUsers = async (req, res) => {
 // Read a Single User
 exports.getUserById = async (req, res) => {
   // #swagger.tags = ['Auth']
-  const { id } = req.params;
+  const userId = parseInt(req.params.id);
 
   try {
+    // Get today's time range
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    // Fetch user with today's performance and working hours
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(id) },
-      select: {
-        id: true,
-        username: true,
-        role: true,
-        email: true,
-        dob: true,
-        gender: true,
-        contact: true
-      } // Select required fields
+      where: { id: userId },
+      include: {
+        StaffOnDuty: {
+          where: {
+            createdAt: {
+              gte: todayStart,
+              lte: todayEnd
+            }
+          }
+        },
+        Orders: {
+          where: {
+            order_status: 'Served',
+            createdAt: {
+              gte: todayStart,
+              lte: todayEnd
+            }
+          },
+          include: {
+            billingDetails: true
+          }
+        }
+      }
     });
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-    // Format the dob field to 'YYYY-MM-DD' format
-    user.dob = user.dob ? user.dob.toISOString().split('T')[0] : null;
+    // Calculate performance metrics
+    const ordersServed = user.Orders.length;
+    const totalEarnings = user.Orders.reduce(
+      (sum, order) => sum + (order.billingDetails?.total || 0),
+      0
+    );
+    const totalDuration = user.Orders.reduce(
+      (sum, order) => sum + (order.duration || 0),
+      0
+    );
+    const averageTime =
+      ordersServed > 0
+        ? (totalDuration / ordersServed).toFixed(1) + ' min/order'
+        : 'N/A';
 
-    res.status(200).json(user);
+    // Calculate total working hours today
+    let workingHours = 0;
+    user.StaffOnDuty.forEach((session) => {
+      const start = session.startTime;
+      const end = session.endTime || new Date();
+      workingHours += (end - start) / (1000 * 60 * 60); // Convert milliseconds to hours
+    });
+
+    // Format user details
+    const userDetails = {
+      id: user.id,
+      name: user.username,
+      role: user.role,
+      email: user.email,
+      contact: user.contact,
+      dob: user.dob.toISOString().split('T')[0],
+      gender: user.gender,
+      status: user.StaffOnDuty.length > 0 ? 'Active' : 'Inactive',
+      serviceTime: `${workingHours.toFixed(1)} hours`,
+      performanceStatus: {
+        today: {
+          ordersServed,
+          averageTime
+        }
+      },
+      workingHours: `${workingHours.toFixed(1)} hours/day`,
+      totalEarnings: `Rs. ${totalEarnings.toFixed(2)}`
+    };
+
+    res.status(200).json(userDetails);
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({ message: 'Error fetching user', error });
