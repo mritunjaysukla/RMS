@@ -10,6 +10,7 @@ const reportsRoutes = require('./report.routes');
 const tableRoutes = require('./table.routes');
 const authRoutes = require('./auth.routes');
 const categoryRoutes = require('./category.routes');
+const staffRoutes = require('./staff.routes');
 
 module.exports = (app) => {
   app.use(express.json());
@@ -19,6 +20,8 @@ module.exports = (app) => {
   app.use('/api', authRoutes);
 
   app.use('/api', userRoutes);
+
+  app.use('/api', staffRoutes);
 
   app.use('/api', menuRoutes);
 
