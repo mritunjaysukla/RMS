@@ -1,26 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const {
-  createOrder,
-  getOrdersByTable,
-  updateOrderStatus,
-  getOrders,
-  handlePayment
-} = require('../controllers/order.controller');
+const orderController = require('../controllers/order.controller');
+const { auth } = require('../middlewares/auth.middleware');
 const validateRole = require('../middlewares/role.middleware');
-const { auth, authorize } = require('../middlewares/auth.middleware');
 
-router.get('/orders', auth, authorize, validateRole(['MANAGER']), getOrders);
+// Create Order (Waiter only)
 router.post(
-  '/payment',
-  auth,
-  authorize,
-  validateRole(['MANAGER']),
-  handlePayment
+  '/orders',
+  auth(['Waiter']),
+  validateRole,
+  orderController.createOrder
 );
 
-router.post('/orders', validateRole(['WAITER']), createOrder);
-router.get('/orders/table/:tableId', getOrdersByTable);
-router.patch('/orders/:orderId', updateOrderStatus);
+// Get Orders with Filters (Admin/Manager)
+router.get(
+  '/orders',
+  auth(['Admin', 'Manager']),
+  validateRole,
+  orderController.getOrders
+);
+
+// Get Order Details (Anyone can access)
+router.get(
+  '/orders/:id',
+  auth(),
+  validateRole,
+  orderController.getOrderDetails
+);
+
+// Update Order Status (Admin/Manager)
+router.patch(
+  '/orders/:id/status',
+  auth(['Admin', 'Manager']),
+  validateRole,
+  orderController.updateOrderStatus
+);
 
 module.exports = router;

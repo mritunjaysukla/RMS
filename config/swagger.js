@@ -112,6 +112,33 @@ const doc = {
       enum: ['Active', 'Pending', 'Rejected']
     }
   },
+  Order: {
+    type: 'object',
+    properties: {
+      id: { type: 'integer' },
+      order_number: { type: 'string' },
+      order_status: { $ref: '#/definitions/OrderStatus' },
+      createdAt: { type: 'string', format: 'date-time' }
+    }
+  },
+  StaffOnDuty: {
+    type: 'object',
+    properties: {
+      id: { type: 'integer' },
+      startTime: { type: 'string', format: 'date-time' },
+      endTime: { type: 'string', format: 'date-time' },
+      status: { $ref: '#/definitions/StaffStatus' }
+    }
+  },
+  OrderStatus: {
+    type: 'string',
+    enum: ['Preparing', 'Served', 'Rejected']
+  },
+  StaffStatus: {
+    type: 'string',
+    enum: ['Active', 'Inactive', 'OnBreak']
+  },
+
   paths: {
     '/register': {
       post: {
@@ -663,6 +690,113 @@ const doc = {
           500: { description: 'Failed to delete category' }
         }
       }
+    },
+
+    '/orders': {
+      post: {
+        tags: ['Order'],
+        summary: 'Create new order',
+        description:
+          'Creates a new order with items. Only accessible by Waiters.',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  tableId: { type: 'integer', example: 1 },
+                  specialInstructions: { type: 'string', example: 'No onions' },
+                  discount: { type: 'number', example: 100 },
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        menuItemId: { type: 'integer', example: 1 },
+                        quantity: { type: 'integer', example: 2 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          201: { description: 'Order created successfully' },
+          400: { description: 'Invalid input' },
+          500: { description: 'Failed to create order' }
+        }
+      },
+      get: {
+        tags: ['Order'],
+        summary: 'Get orders with filters',
+        description:
+          'Fetches orders with optional filters (status, date range, waiter).',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'status',
+            in: 'query',
+            schema: { $ref: '#/definitions/OrderStatus' }
+          },
+          {
+            name: 'startDate',
+            in: 'query',
+            schema: { type: 'string', format: 'date' }
+          },
+          {
+            name: 'endDate',
+            in: 'query',
+            schema: { type: 'string', format: 'date' }
+          },
+          { name: 'waiterId', in: 'query', schema: { type: 'integer' } }
+        ],
+        responses: {
+          200: {
+            description: 'Orders fetched successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/definitions/Order' }
+                }
+              }
+            }
+          },
+          500: { description: 'Failed to fetch orders' }
+        }
+      }
+    },
+    '/orders/{id}': {
+      get: {
+        tags: ['Order'],
+        summary: 'Get order details',
+        description: 'Fetches detailed information about a specific order.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'integer' }
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Order fetched successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/definitions/Order' }
+              }
+            }
+          },
+          404: { description: 'Order not found' },
+          500: { description: 'Failed to fetch order' }
+        }
+      }
     }
   }
 };
@@ -672,7 +806,9 @@ const endpointsFiles = [
   './routes/user.routes.js',
   './routes/auth.routes.js',
   './routes/menu.routes.js',
-  './routes/FoodCategory.routes.js'
+  './routes/Category.routes.js',
+  './routes/order.routes.js',
+  './routes/staff.routes.js'
 ];
 
 swaggerAutogen(outputFile, endpointsFiles, doc);

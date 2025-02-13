@@ -2,6 +2,7 @@ const { prisma } = require('../utils/prisma');
 
 // Create Menu with Items (Manager only)
 exports.createMenuWithItems = async (req, res) => {
+  // #swagger.tags = ['Menu']
   const { categoryId, items } = req.body;
   const userId = req.user.id;
 
