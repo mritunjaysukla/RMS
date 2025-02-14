@@ -954,7 +954,7 @@
         }
       }
     },
-    "/staff/on-duty": {
+    "/staffOnDuty": {
       "get": {
         "tags": [
           "Staff"
@@ -963,6 +963,118 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/reports": {
+      "post": {
+        "tags": [
+          "Report"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "period": {
+                  "example": "any"
+                },
+                "submittedToId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Report"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/reports/{id}": {
+      "get": {
+        "tags": [
+          "Report"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1465,59 +1577,311 @@
           }
         }
       }
-    }
-  },
-  "Order": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "integer"
-      },
-      "order_number": {
-        "type": "string"
-      },
-      "order_status": {
-        "$ref": "#/definitions/OrderStatus"
-      },
-      "createdAt": {
-        "type": "string",
-        "format": "date-time"
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "order_number": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "order_status": {
+              "$ref": "#/definitions/OrderStatus"
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "StaffOnDuty": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "status": {
+              "$ref": "#/definitions/StaffStatus"
+            },
+            "role": {
+              "$ref": "#/definitions/Role"
+            },
+            "contact": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "dob": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date"
+                }
+              }
+            },
+            "gender": {
+              "$ref": "#/definitions/Gender"
+            },
+            "serviceTime": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "performanceStatus": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "today": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "object"
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "ordersServed": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "integer"
+                                }
+                              }
+                            },
+                            "averageTime": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "OrderStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Preparing",
+            "Served",
+            "Rejected"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "StaffStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Active",
+            "Inactive",
+            "OnBreak"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Report": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "period": {
+              "$ref": "#/definitions/ReportPeriod"
+            },
+            "total_orders": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "total_sales": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "float"
+                }
+              }
+            },
+            "managerId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "submittedToId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "integer"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ReportPeriod": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "string"
+        },
+        "enum": {
+          "type": "array",
+          "example": [
+            "Daily",
+            "Weekly",
+            "Monthly"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
       }
     }
-  },
-  "StaffOnDuty": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "integer"
-      },
-      "startTime": {
-        "type": "string",
-        "format": "date-time"
-      },
-      "endTime": {
-        "type": "string",
-        "format": "date-time"
-      },
-      "status": {
-        "$ref": "#/definitions/StaffStatus"
-      }
-    }
-  },
-  "OrderStatus": {
-    "type": "string",
-    "enum": [
-      "Preparing",
-      "Served",
-      "Rejected"
-    ]
-  },
-  "StaffStatus": {
-    "type": "string",
-    "enum": [
-      "Active",
-      "Inactive",
-      "OnBreak"
-    ]
   }
 }

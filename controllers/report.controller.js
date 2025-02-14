@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 
 // 1. Generate Report (Manager only)
 const generateReport = async (req, res) => {
+  // #swagger.tags = ['Report']
   try {
     const { period, submittedToId } = req.body;
     const managerId = req.user.id;
@@ -57,6 +58,7 @@ const generateReport = async (req, res) => {
 
 // 2. Get All Reports (Admin only)
 const getAllReports = async (req, res) => {
+  // #swagger.tags = ['Report']
   try {
     const reports = await prisma.report.findMany({
       include: { manager: true, submitted_to: true }
@@ -69,6 +71,7 @@ const getAllReports = async (req, res) => {
 
 // 3. Get Report Details (Admin only)
 const getReportDetails = async (req, res) => {
+  // #swagger.tags = ['Report']
   try {
     const report = await prisma.report.findUnique({
       where: { id: Number(req.params.id) },

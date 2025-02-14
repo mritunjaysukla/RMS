@@ -110,35 +110,67 @@ const doc = {
     MenuStatus: {
       type: 'string',
       enum: ['Active', 'Pending', 'Rejected']
-    }
-  },
-  Order: {
-    type: 'object',
-    properties: {
-      id: { type: 'integer' },
-      order_number: { type: 'string' },
-      order_status: { $ref: '#/definitions/OrderStatus' },
-      createdAt: { type: 'string', format: 'date-time' }
-    }
-  },
-  StaffOnDuty: {
-    type: 'object',
-    properties: {
-      id: { type: 'integer' },
-      startTime: { type: 'string', format: 'date-time' },
-      endTime: { type: 'string', format: 'date-time' },
-      status: { $ref: '#/definitions/StaffStatus' }
-    }
-  },
-  OrderStatus: {
-    type: 'string',
-    enum: ['Preparing', 'Served', 'Rejected']
-  },
-  StaffStatus: {
-    type: 'string',
-    enum: ['Active', 'Inactive', 'OnBreak']
-  },
+    },
+    Order: {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        order_number: { type: 'string' },
+        order_status: { $ref: '#/definitions/OrderStatus' },
+        createdAt: { type: 'string', format: 'date-time' }
+      }
+    },
+    StaffOnDuty: {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        status: { $ref: '#/definitions/StaffStatus' },
+        role: { $ref: '#/definitions/Role' },
+        contact: { type: 'string' },
+        dob: { type: 'string', format: 'date' },
+        gender: { $ref: '#/definitions/Gender' },
+        serviceTime: { type: 'string' },
+        performanceStatus: {
+          type: 'object',
+          properties: {
+            today: {
+              type: 'object',
+              properties: {
+                ordersServed: { type: 'integer' },
+                averageTime: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    },
 
+    OrderStatus: {
+      type: 'string',
+      enum: ['Preparing', 'Served', 'Rejected']
+    },
+    StaffStatus: {
+      type: 'string',
+      enum: ['Active', 'Inactive', 'OnBreak']
+    },
+    Report: {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        period: { $ref: '#/definitions/ReportPeriod' },
+        total_orders: { type: 'integer' },
+        total_sales: { type: 'number', format: 'float' },
+        managerId: { type: 'integer' },
+        submittedToId: { type: 'integer' },
+        createdAt: { type: 'string', format: 'date-time' }
+      }
+    },
+    ReportPeriod: {
+      type: 'string',
+      enum: ['Daily', 'Weekly', 'Monthly']
+    }
+  },
   paths: {
     '/register': {
       post: {
@@ -246,7 +278,9 @@ const doc = {
         },
         responses: {
           200: { description: 'Password reset successfully' },
-          400: { description: 'Invalid reset code or passwords do not match' },
+          400: {
+            description: 'Invalid reset code or passwords do not match'
+          },
           500: { description: 'Failed to reset password' }
         }
       }
@@ -262,7 +296,10 @@ const doc = {
             description: 'Users fetched successfully',
             content: {
               'application/json': {
-                schema: { type: 'array', items: { $ref: '#/definitions/User' } }
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/definitions/User' }
+                }
               }
             }
           },
@@ -454,7 +491,10 @@ const doc = {
             description: 'Menus fetched successfully',
             content: {
               'application/json': {
-                schema: { type: 'array', items: { $ref: '#/definitions/Menu' } }
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/definitions/Menu' }
+                }
               }
             }
           },
@@ -707,7 +747,10 @@ const doc = {
                 type: 'object',
                 properties: {
                   tableId: { type: 'integer', example: 1 },
-                  specialInstructions: { type: 'string', example: 'No onions' },
+                  specialInstructions: {
+                    type: 'string',
+                    example: 'No onions'
+                  },
                   discount: { type: 'number', example: 100 },
                   items: {
                     type: 'array',
@@ -797,6 +840,211 @@ const doc = {
           500: { description: 'Failed to fetch order' }
         }
       }
+    },
+    '/reports': {
+      post: {
+        tags: ['Report'],
+        summary: 'Generate a new report',
+        description:
+          'Generates a report for a specific period (Daily, Weekly, Monthly). Only accessible by Managers.',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  period: { $ref: '#/definitions/ReportPeriod' },
+                  submittedToId: {
+                    type: 'integer',
+                    description: 'Admin ID to whom the report is submitted'
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          201: {
+            description: 'Report generated successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/definitions/Report' }
+              }
+            }
+          },
+          400: { description: 'Invalid input' },
+          403: { description: 'Only managers can generate reports' },
+          404: { description: 'Admin not found' },
+          500: { description: 'Failed to generate report' }
+        }
+      },
+      get: {
+        tags: ['Report'],
+        summary: 'Get all reports',
+        description:
+          'Fetches a list of all reports. Only accessible by Admins.',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Reports fetched successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/definitions/Report' }
+                }
+              }
+            }
+          },
+          403: { description: 'Only admins can view reports' },
+          500: { description: 'Failed to fetch reports' }
+        }
+      }
+    },
+    '/reports/{id}': {
+      get: {
+        tags: ['Report'],
+        summary: 'Get report details',
+        description:
+          'Fetches detailed information about a specific report, including table-wise and order-wise breakdowns. Only accessible by Admins.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Report ID',
+            schema: { type: 'integer' }
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Report details fetched successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'integer' },
+                    period: { $ref: '#/definitions/ReportPeriod' },
+                    total_orders: { type: 'integer' },
+                    total_sales: { type: 'number', format: 'float' },
+                    tables: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          tableNumber: { type: 'string' },
+                          totalOrder: { type: 'integer' },
+                          totalSales: { type: 'number', format: 'float' },
+                          orders: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              properties: {
+                                timeSlot: { type: 'string' },
+                                items: {
+                                  type: 'array',
+                                  items: {
+                                    type: 'object',
+                                    properties: {
+                                      name: { type: 'string' },
+                                      quantity: { type: 'integer' },
+                                      price: {
+                                        type: 'number',
+                                        format: 'float'
+                                      }
+                                    }
+                                  }
+                                },
+                                subtotal: { type: 'number', format: 'float' },
+                                tax: { type: 'number', format: 'float' },
+                                total: { type: 'number', format: 'float' }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          404: { description: 'Report not found' },
+          500: { description: 'Failed to fetch report details' }
+        }
+      }
+    },
+    '/staff/on-duty': {
+      get: {
+        tags: ['Staff'],
+        summary: 'Get all staff currently on duty',
+        description:
+          'Fetches a list of all staff members currently on duty, including their performance metrics (orders served, average time, earnings, etc.).',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'role',
+            in: 'query',
+            description: 'Filter staff by role (e.g., Waiter, Manager)',
+            schema: { $ref: '#/definitions/Role' },
+            required: false
+          },
+          {
+            name: 'status',
+            in: 'query',
+            description: 'Filter staff by status (e.g., Active, OnBreak)',
+            schema: { $ref: '#/definitions/StaffStatus' },
+            required: false
+          },
+          {
+            name: 'startDate',
+            in: 'query',
+            description: 'Filter by start date (e.g., 2023-10-01)',
+            schema: { type: 'string', format: 'date' },
+            required: false
+          },
+          {
+            name: 'endDate',
+            in: 'query',
+            description: 'Filter by end date (e.g., 2023-10-31)',
+            schema: { type: 'string', format: 'date' },
+            required: false
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Staff on duty fetched successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/definitions/StaffOnDuty' }
+                }
+              }
+            }
+          },
+          500: {
+            description: 'Failed to fetch staff on duty',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Failed to fetch staff on duty'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 };
@@ -808,7 +1056,8 @@ const endpointsFiles = [
   './routes/menu.routes.js',
   './routes/Category.routes.js',
   './routes/order.routes.js',
-  './routes/staff.routes.js'
+  './routes/staff.routes.js',
+  './routes/report.routes.js'
 ];
 
 swaggerAutogen(outputFile, endpointsFiles, doc);

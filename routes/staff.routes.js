@@ -4,6 +4,6 @@ const { getStaffOnDuty } = require('../controllers/staff.controller');
 const router = express.Router();
 
 // Route to get all staff currently on duty
-router.get('/staff/on-duty', getStaffOnDuty);
+router.get('/staffOnDuty', getStaffOnDuty);
 
 module.exports = router;

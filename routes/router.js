@@ -7,7 +7,7 @@ const userRoutes = require('./user.routes');
 const menuRoutes = require('./menu.routes');
 const orderRoutes = require('./order.routes');
 const reportsRoutes = require('./report.routes');
-const tableRoutes = require('./table.routes');
+
 const authRoutes = require('./auth.routes');
 const categoryRoutes = require('./category.routes');
 const staffRoutes = require('./staff.routes');
@@ -30,8 +30,6 @@ module.exports = (app) => {
   app.use('/api', orderRoutes);
 
   app.use('/api', reportsRoutes);
-
-  app.use('/api', tableRoutes);
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 };
