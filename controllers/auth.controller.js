@@ -3,8 +3,6 @@ const { prisma } = require('../utils/prisma');
 
 const SALT_ROUNDS = 10;
 
-// Create User
-
 // Create User (Admin Only)
 exports.createUser = async (req, res) => {
   // #swagger.tags = ['Auth']
@@ -62,7 +60,7 @@ exports.createUser = async (req, res) => {
         dob: formattedDob,
         gender,
         contact,
-        isApproved: true // Since admin is adding, the user is already approved
+        isApproved: true
       }
     });
 
@@ -109,7 +107,7 @@ exports.getUsers = async (req, res) => {
     // Format the dob field to 'YYYY-MM-DD' format
     const formattedUsers = users.map((user) => ({
       ...user,
-      dob: user.dob ? user.dob.toISOString().split('T')[0] : null // Format dob
+      dob: user.dob ? user.dob.toISOString().split('T')[0] : null
     }));
 
     res.status(200).json(formattedUsers);
@@ -233,7 +231,7 @@ exports.updateUser = async (req, res) => {
 
     // If password is provided, hash it
     if (password) {
-      updateData.password = await bcrypt.hash(password, SALT_ROUNDS); // Hash the new password
+      updateData.password = await bcrypt.hash(password, SALT_ROUNDS);
     }
 
     const updatedUser = await prisma.user.update({

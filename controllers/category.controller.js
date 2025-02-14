@@ -1,7 +1,6 @@
 const { prisma } = require('../utils/prisma');
 
-// Create Category (Admin on
-// ly)
+// Create Category (Admin only)
 exports.createCategory = async (req, res) => {
   // #swagger.tags = ['Food Category']
   const { name } = req.body;
