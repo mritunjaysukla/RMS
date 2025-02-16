@@ -1054,7 +1054,7 @@ const endpointsFiles = [
   './routes/user.routes.js',
   './routes/auth.routes.js',
   './routes/menu.routes.js',
-  './routes/Category.routes.js',
+  './routes/category.routes.js',
   './routes/order.routes.js',
   './routes/staff.routes.js',
   './routes/report.routes.js'

@@ -89,16 +89,29 @@ const loginUser = async (req, res) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
     }
 
+    // Generate JWT token
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },
       SECRET_KEY,
       { expiresIn: '1h' }
     );
+
+    // If the user is a Waiter or Manager, create a duty session
+    if (user.role === 'Waiter' || user.role === 'Manager') {
+      await prisma.staffOnDuty.create({
+        data: {
+          userId: user.id,
+          startTime: new Date(),
+          status: 'Active'
+        }
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -115,11 +128,13 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
   }
 };
+
 const forgotPassword = async (req, res) => {
   // #swagger.tags = ['User']
   const { email } = req.body;
@@ -234,9 +249,42 @@ const resetPassword = async (req, res) => {
     });
   }
 };
+
+const logout = async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    // Find the active duty session
+    const activeDuty = await prisma.staffOnDuty.findFirst({
+      where: {
+        userId,
+        endTime: null // Only active sessions
+      }
+    });
+
+    if (!activeDuty) {
+      return res.status(404).json({ message: 'No active duty session found' });
+    }
+
+    // End the duty session
+    await prisma.staffOnDuty.update({
+      where: { id: activeDuty.id },
+      data: {
+        endTime: new Date(),
+        status: 'Inactive'
+      }
+    });
+
+    res.status(200).json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ message: 'Logout failed' });
+  }
+};
 module.exports = {
   register,
   loginUser,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  logout
 };
