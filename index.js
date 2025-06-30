@@ -15,7 +15,7 @@ app.use(morgan('dev'));
 require('./routes/router')(app);
 app.use(
   cors({
-    origin: ['http://localhost:8080'], // Add allowed origins
+    origin: ["*"], // Add allowed origins
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Add allowed methods
     credentials: true // Allow credentials if needed
   })
