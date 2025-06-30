@@ -60,6 +60,22 @@ const options = {
             requestedAt: { type: 'string', format: 'date-time', description: 'Timestamp when the reset was requested' },
           },
         },
+        User: {
+          type: 'object',
+          required: ['id', 'username', 'email', 'contact', 'dob', 'gender', 'role'],
+          properties: {
+            id: { type: 'integer', description: 'Unique identifier for the user' },
+            username: { type: 'string', description: 'Username of the user' },
+            email: { type: 'string', format: 'email', description: 'Email address of the user' },
+            contact: { type: 'string', description: 'Contact number of the user' },
+            dob: { type: 'string', format: 'date', description: 'Date of birth of the user' },
+            gender: { $ref: '#/components/schemas/Gender' },
+            role: { $ref: '#/components/schemas/Role' },
+            isActive: { type: 'boolean', description: 'Indicates if the user is active' },
+            createdAt: { type: 'string', format: 'date-time', description: 'Timestamp when the user was created' },
+            updatedAt: { type: 'string', format: 'date-time', description: 'Timestamp when the user was last updated' },
+          },
+        },
         Menu: {
           type: 'object',
           required: ['name', 'categoryId', 'createdById', 'status'],
@@ -188,12 +204,6 @@ const options = {
           type: 'string',
           enum: ['Daily', 'Weekly', 'Monthly'],
           description: 'Reporting period',
-        },
-        Error: {
-          type: 'object',
-          properties: {
-            message: { type: 'string', description: 'Error message' },
-          },
         },
       },
     },
@@ -1812,16 +1822,16 @@ const options = {
         },
       },
     },
-    apis: [
-      './routes/user.routes.js',
-      './routes/auth.routes.js',
-      './routes/menu.routes.js',
-      './routes/category.routes.js',
-      './routes/order.routes.js',
-      './routes/staff.routes.js',
-      './routes/report.routes.js',
-    ],
   },
-}
+  apis: [
+    '../routes/user.routes.js',
+    '../routes/auth.routes.js',
+    '../routes/menu.routes.js',
+    '../routes/category.routes.js',
+    '../routes/order.routes.js',
+    '../routes/staff.routes.js',
+    '../routes/report.routes.js',
+  ],
+};
 
 module.exports = options;

@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const swaggerOptions = require('./swagger.config'); // <== Your config file
+const swaggerOptions = require('./config/swagger');
 
 const app = express();
 
@@ -33,6 +33,12 @@ require('./routes/router')(app);
 // Base route
 app.get('/', (_req, res) => {
   res.status(200).send('Welcome to Restaurant Management System');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Internal server error' });
 });
 
 // Port configuration
