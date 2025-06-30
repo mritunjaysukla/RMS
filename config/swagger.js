@@ -17,7 +17,7 @@ const doc = {
       description: 'Local Development Server',
     },
     {
-      url: 'https://restaurant-management-system-production.up.railway.app',
+      url: 'https://rms-ext6.onrender.com',
       description: 'Production Server',
     },
   ],
@@ -31,20 +31,10 @@ const doc = {
       },
     },
     schemas: {
-      User: {
+      Error: {
         type: 'object',
-        required: ['username', 'email', 'password', 'contact', 'dob', 'gender', 'role'],
         properties: {
-          id: { type: 'integer', description: 'Unique identifier for the user' },
-          username: { type: 'string', description: 'User’s display name' },
-          email: { type: 'string', format: 'email', description: 'User’s email address' },
-          password: { type: 'string', format: 'password', description: 'Hashed password (not returned in responses)' },
-          contact: { type: 'string', description: 'User’s contact number' },
-          dob: { type: 'string', format: 'date', description: 'User’s date of birth (YYYY-MM-DD)' },
-          gender: { $ref: '#/components/schemas/Gender' },
-          role: { $ref: '#/components/schemas/Role' },
-          createdAt: { type: 'string', format: 'date-time', description: 'Timestamp when the user was created' },
-          isActive: { type: 'boolean', description: 'Indicates if the user account is active' },
+          message: { type: 'string', description: 'Error message' },
         },
       },
       Role: {
@@ -398,6 +388,41 @@ const doc = {
           },
           404: {
             description: 'User or reset code not found',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+          500: {
+            description: 'Internal server error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+        },
+      },
+    },
+    '/logout': {
+      post: {
+        tags: ['Authentication'],
+        summary: 'Log out a user',
+        description: 'Invalidates the user’s session or JWT token.',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'User logged out successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: { type: 'string', example: 'User logged out successfully' },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
             content: {
               'application/json': { schema: { $ref: '#/components/schemas/Error' } },
             },
@@ -1434,6 +1459,45 @@ const doc = {
         },
       },
     },
+    '/staff': {
+      get: {
+        tags: ['Staff'],
+        summary: 'Get all staff members',
+        description: 'Fetches a list of all staff members. Requires Admin or Manager role.',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Staff members fetched successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/StaffOnDuty' },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+          403: {
+            description: 'Forbidden: Insufficient role permissions',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+          500: {
+            description: 'Internal server error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+        },
+      },
+    },
     '/staff/on-duty': {
       get: {
         tags: ['Staff'],
@@ -1486,6 +1550,62 @@ const doc = {
           },
           403: {
             description: 'Forbidden: Insufficient role permissions',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+          500: {
+            description: 'Internal server error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+        },
+      },
+    },
+    '/staff/{id}': {
+      delete: {
+        tags: ['Staff'],
+        summary: 'Delete a staff member',
+        description: 'Deletes a staff member by ID. Requires Admin role.',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'Staff member ID',
+            schema: { type: 'integer', example: 1 },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Staff member deleted successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: { type: 'string', example: 'Staff member deleted successfully' },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+          403: {
+            description: 'Forbidden: Insufficient role permissions',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/Error' } },
+            },
+          },
+          404: {
+            description: 'Staff member not found',
             content: {
               'application/json': { schema: { $ref: '#/components/schemas/Error' } },
             },

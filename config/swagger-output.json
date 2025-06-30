@@ -15,7 +15,7 @@
       "description": "Local Development Server"
     },
     {
-      "url": "https://restaurant-management-system-production.up.railway.app",
+      "url": "https://rms-ext6.onrender.com",
       "description": "Production Server"
     }
   ],
@@ -1174,45 +1174,17 @@
       }
     },
     "schemas": {
-      "User": {
+      "Error": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
             "example": "object"
           },
-          "required": {
-            "type": "array",
-            "example": [
-              "username",
-              "email",
-              "password",
-              "contact",
-              "dob",
-              "gender",
-              "role"
-            ],
-            "items": {
-              "type": "string"
-            }
-          },
           "properties": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "integer"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Unique identifier for the user"
-                  }
-                }
-              },
-              "username": {
+              "message": {
                 "type": "object",
                 "properties": {
                   "type": {
@@ -1221,107 +1193,7 @@
                   },
                   "description": {
                     "type": "string",
-                    "example": "User’s display name"
-                  }
-                }
-              },
-              "email": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "format": {
-                    "type": "string",
-                    "example": "email"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "User’s email address"
-                  }
-                }
-              },
-              "password": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "format": {
-                    "type": "string",
-                    "example": "password"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Hashed password (not returned in responses)"
-                  }
-                }
-              },
-              "contact": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "User’s contact number"
-                  }
-                }
-              },
-              "dob": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "format": {
-                    "type": "string",
-                    "example": "date"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "User’s date of birth (YYYY-MM-DD)"
-                  }
-                }
-              },
-              "gender": {
-                "$ref": "#/components/schemas/Gender"
-              },
-              "role": {
-                "$ref": "#/components/schemas/Role"
-              },
-              "createdAt": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "format": {
-                    "type": "string",
-                    "example": "date-time"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Timestamp when the user was created"
-                  }
-                }
-              },
-              "isActive": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "boolean"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Indicates if the user account is active"
+                    "example": "Error message"
                   }
                 }
               }
@@ -2443,33 +2315,6 @@
           "description": {
             "type": "string",
             "example": "Reporting period"
-          }
-        }
-      },
-      "Error": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "object"
-          },
-          "properties": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Error message"
-                  }
-                }
-              }
-            }
           }
         }
       }
