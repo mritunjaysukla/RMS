@@ -1,14 +1,14 @@
 {
   "swagger": "2.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "Restaurant Management System API",
-    "description": "API documentation for Restaurant Management System",
+    "description": "API for managing restaurant operations, including user authentication, menu management, order processing, staff management, and reporting.",
     "version": "1.0.0",
     "contact": {
       "email": "mritunjaysukla07@gmail.com"
     }
   },
-  "host": "localhost:8080",
   "servers": [
     {
       "url": "http://localhost:8080",
@@ -19,19 +19,6 @@
       "description": "Production Server"
     }
   ],
-  "basePath": "/",
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "securityDefinitions": {
-    "bearerAuth": {
-      "type": "apiKey",
-      "in": "header",
-      "name": "Authorization",
-      "description": "Bearer token for authentication"
-    }
-  },
   "paths": {
     "/register": {
       "post": {
@@ -1177,652 +1164,1106 @@
       }
     }
   },
-  "definitions": {
-    "User": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Bearer token for authentication (e.g., \"Bearer <token>\")."
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
         "properties": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "username": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "password": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "email": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "contact": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "dob": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date"
-                }
-              }
-            },
-            "gender": {
-              "$ref": "#/definitions/Gender"
-            },
-            "role": {
-              "$ref": "#/definitions/Role"
-            },
-            "createdAt": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date-time"
-                }
-              }
-            },
-            "isActive": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "boolean"
-                }
-              }
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "username",
+              "email",
+              "password",
+              "contact",
+              "dob",
+              "gender",
+              "role"
+            ],
+            "items": {
+              "type": "string"
             }
-          }
-        }
-      }
-    },
-    "Role": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Admin",
-            "Manager",
-            "Waiter"
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Gender": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Male",
-            "Female",
-            "Other"
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "PasswordReset": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
-        "properties": {
-          "type": "object",
+          },
           "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "userId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "reset_code": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "expires_at": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date-time"
-                }
-              }
-            },
-            "is_used": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "boolean"
-                }
-              }
-            },
-            "requested_at": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date-time"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "Menu": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
-        "properties": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "name": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "categoryId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "createdById": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "status": {
-              "$ref": "#/definitions/MenuStatus"
-            },
-            "isApproved": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "boolean"
-                }
-              }
-            },
-            "approvedById": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "createdAt": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date-time"
-                }
-              }
-            },
-            "updatedAt": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date-time"
-                }
-              }
-            },
-            "MenuItems": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "array"
-                },
-                "items": {
-                  "$ref": "#/definitions/MenuItem"
-                }
-              }
-            },
-            "category": {
-              "$ref": "#/definitions/FoodCategory"
-            },
-            "created_by": {
-              "$ref": "#/definitions/User"
-            },
-            "approved_by": {
-              "$ref": "#/definitions/User"
-            }
-          }
-        }
-      }
-    },
-    "MenuItem": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
-        "properties": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "name": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "price": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "number"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "float"
-                }
-              }
-            },
-            "isAvailable": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "boolean"
-                }
-              }
-            },
-            "isPopular": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "boolean"
-                }
-              }
-            },
-            "categoryId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "menuId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "category": {
-              "$ref": "#/definitions/FoodCategory"
-            }
-          }
-        }
-      }
-    },
-    "FoodCategory": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
-        "properties": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "name": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "Menu": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "array"
-                },
-                "items": {
-                  "$ref": "#/definitions/Menu"
-                }
-              }
-            },
-            "MenuItem": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "array"
-                },
-                "items": {
-                  "$ref": "#/definitions/MenuItem"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "MenuStatus": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Active",
-            "Pending",
-            "Rejected"
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Order": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
-        "properties": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "order_number": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "order_status": {
-              "$ref": "#/definitions/OrderStatus"
-            },
-            "createdAt": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date-time"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "StaffOnDuty": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
-        "properties": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
-                }
-              }
-            },
-            "name": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "status": {
-              "$ref": "#/definitions/StaffStatus"
-            },
-            "role": {
-              "$ref": "#/definitions/Role"
-            },
-            "contact": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "dob": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date"
-                }
-              }
-            },
-            "gender": {
-              "$ref": "#/definitions/Gender"
-            },
-            "serviceTime": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "performanceStatus": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "object"
-                },
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
                 "properties": {
-                  "type": "object",
-                  "properties": {
-                    "today": {
-                      "type": "object",
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the user"
+                  }
+                }
+              },
+              "username": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "User’s display name"
+                  }
+                }
+              },
+              "email": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "email"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "User’s email address"
+                  }
+                }
+              },
+              "password": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Hashed password (not returned in responses)"
+                  }
+                }
+              },
+              "contact": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "User’s contact number"
+                  }
+                }
+              },
+              "dob": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "User’s date of birth (YYYY-MM-DD)"
+                  }
+                }
+              },
+              "gender": {
+                "$ref": "#/components/schemas/Gender"
+              },
+              "role": {
+                "$ref": "#/components/schemas/Role"
+              },
+              "createdAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Timestamp when the user was created"
+                  }
+                }
+              },
+              "isActive": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "boolean"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Indicates if the user account is active"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "enum": {
+            "type": "array",
+            "example": [
+              "Admin",
+              "Manager",
+              "Waiter"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Role assigned to the user"
+          }
+        }
+      },
+      "Gender": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "enum": {
+            "type": "array",
+            "example": [
+              "Male",
+              "Female",
+              "Other"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Gender of the user"
+          }
+        }
+      },
+      "PasswordReset": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "userId",
+              "resetCode",
+              "expiresAt"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the password reset request"
+                  }
+                }
+              },
+              "userId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the user requesting password reset"
+                  }
+                }
+              },
+              "resetCode": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Code for resetting the password"
+                  }
+                }
+              },
+              "expiresAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Expiry timestamp for the reset code"
+                  }
+                }
+              },
+              "isUsed": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "boolean"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Indicates if the reset code has been used"
+                  }
+                }
+              },
+              "requestedAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Timestamp when the reset was requested"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Menu": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "name",
+              "categoryId",
+              "createdById",
+              "status"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the menu"
+                  }
+                }
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Name of the menu"
+                  }
+                }
+              },
+              "categoryId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the category the menu belongs to"
+                  }
+                }
+              },
+              "createdById": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the user who created the menu"
+                  }
+                }
+              },
+              "status": {
+                "$ref": "#/components/schemas/MenuStatus"
+              },
+              "isApproved": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "boolean"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Indicates if the menu is approved"
+                  }
+                }
+              },
+              "approvedById": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the user who approved the menu"
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Timestamp when the menu was created"
+                  }
+                }
+              },
+              "updatedAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Timestamp when the menu was last updated"
+                  }
+                }
+              },
+              "menuItems": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "array"
+                  },
+                  "items": {
+                    "$ref": "#/components/schemas/MenuItem"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "List of menu items"
+                  }
+                }
+              },
+              "category": {
+                "$ref": "#/components/schemas/FoodCategory"
+              },
+              "createdBy": {
+                "$ref": "#/components/schemas/User"
+              },
+              "approvedBy": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      },
+      "MenuItem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "name",
+              "price",
+              "categoryId",
+              "menuId"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the menu item"
+                  }
+                }
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Name of the menu item"
+                  }
+                }
+              },
+              "price": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "number"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "float"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Price of the menu item"
+                  }
+                }
+              },
+              "isAvailable": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "boolean"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Indicates if the menu item is available"
+                  }
+                }
+              },
+              "isPopular": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "boolean"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Indicates if the menu item is popular"
+                  }
+                }
+              },
+              "categoryId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the category the menu item belongs to"
+                  }
+                }
+              },
+              "menuId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the menu the item belongs to"
+                  }
+                }
+              },
+              "category": {
+                "$ref": "#/components/schemas/FoodCategory"
+              }
+            }
+          }
+        }
+      },
+      "FoodCategory": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "name"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the category"
+                  }
+                }
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Name of the food category"
+                  }
+                }
+              },
+              "menus": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "array"
+                  },
+                  "items": {
+                    "$ref": "#/components/schemas/Menu"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Menus in this category"
+                  }
+                }
+              },
+              "menuItems": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "array"
+                  },
+                  "items": {
+                    "$ref": "#/components/schemas/MenuItem"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Menu items in this category"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MenuStatus": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "enum": {
+            "type": "array",
+            "example": [
+              "Active",
+              "Pending",
+              "Rejected"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Status of the menu"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "orderNumber",
+              "orderStatus",
+              "tableId",
+              "items"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the order"
+                  }
+                }
+              },
+              "orderNumber": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique order number"
+                  }
+                }
+              },
+              "orderStatus": {
+                "$ref": "#/components/schemas/OrderStatus"
+              },
+              "tableId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the table associated with the order"
+                  }
+                }
+              },
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "array"
+                  },
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "object"
+                      },
+                      "required": {
+                        "type": "array",
+                        "example": [
+                          "menuItemId",
+                          "quantity"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
                       "properties": {
-                        "type": {
-                          "type": "string",
-                          "example": "object"
-                        },
+                        "type": "object",
                         "properties": {
-                          "type": "object",
-                          "properties": {
-                            "ordersServed": {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "type": "string",
-                                  "example": "integer"
-                                }
+                          "menuItemId": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "example": "integer"
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "ID of the menu item"
                               }
-                            },
-                            "averageTime": {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "type": "string",
-                                  "example": "string"
+                            }
+                          },
+                          "quantity": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "example": "integer"
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "Quantity ordered"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "List of items in the order"
+                  }
+                }
+              },
+              "specialInstructions": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Special instructions for the order"
+                  }
+                }
+              },
+              "discount": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "number"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "float"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Discount applied to the order"
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Timestamp when the order was created"
+                  }
+                }
+              },
+              "updatedAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Timestamp when the order was last updated"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "OrderStatus": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "enum": {
+            "type": "array",
+            "example": [
+              "Preparing",
+              "Served",
+              "Rejected"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Status of the order"
+          }
+        }
+      },
+      "StaffOnDuty": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "name",
+              "status",
+              "role",
+              "contact",
+              "dob",
+              "gender"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the staff member"
+                  }
+                }
+              },
+              "name": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Name of the staff member"
+                  }
+                }
+              },
+              "status": {
+                "$ref": "#/components/schemas/StaffStatus"
+              },
+              "role": {
+                "$ref": "#/components/schemas/Role"
+              },
+              "contact": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Contact number of the staff member"
+                  }
+                }
+              },
+              "dob": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Date of birth of the staff member"
+                  }
+                }
+              },
+              "gender": {
+                "$ref": "#/components/schemas/Gender"
+              },
+              "serviceTime": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "nullable": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Duration of service"
+                  }
+                }
+              },
+              "performanceStatus": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "object"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "properties": {
+                      "today": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "example": "object"
+                          },
+                          "properties": {
+                            "type": "object",
+                            "properties": {
+                              "ordersServed": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "example": "integer"
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "example": "Number of orders served today"
+                                  }
+                                }
+                              },
+                              "averageTime": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "example": "Average time to serve orders"
+                                  }
                                 }
                               }
                             }
@@ -1830,149 +2271,205 @@
                         }
                       }
                     }
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Staff performance metrics"
                   }
                 }
               }
             }
           }
         }
-      }
-    },
-    "OrderStatus": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Preparing",
-            "Served",
-            "Rejected"
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "StaffStatus": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Active",
-            "Inactive",
-            "OnBreak"
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Report": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "object"
-        },
+      },
+      "StaffStatus": {
+        "type": "object",
         "properties": {
-          "type": "object",
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "enum": {
+            "type": "array",
+            "example": [
+              "Active",
+              "Inactive",
+              "OnBreak"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Status of the staff member"
+          }
+        }
+      },
+      "Report": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "required": {
+            "type": "array",
+            "example": [
+              "period",
+              "totalOrders",
+              "totalSales",
+              "managerId",
+              "submittedToId"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
           "properties": {
-            "id": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Unique identifier for the report"
+                  }
                 }
-              }
-            },
-            "period": {
-              "$ref": "#/definitions/ReportPeriod"
-            },
-            "total_orders": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
+              },
+              "period": {
+                "$ref": "#/components/schemas/ReportPeriod"
+              },
+              "totalOrders": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Total number of orders in the report"
+                  }
                 }
-              }
-            },
-            "total_sales": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "number"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "float"
+              },
+              "totalSales": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "number"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "float"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Total sales amount in the report"
+                  }
                 }
-              }
-            },
-            "managerId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
+              },
+              "managerId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the manager who created the report"
+                  }
                 }
-              }
-            },
-            "submittedToId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "integer"
+              },
+              "submittedToId": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "integer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ID of the user the report was submitted to"
+                  }
                 }
-              }
-            },
-            "createdAt": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "format": {
-                  "type": "string",
-                  "example": "date-time"
+              },
+              "createdAt": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "format": {
+                    "type": "string",
+                    "example": "date-time"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Timestamp when the report was created"
+                  }
                 }
               }
             }
           }
         }
-      }
-    },
-    "ReportPeriod": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "example": "string"
-        },
-        "enum": {
-          "type": "array",
-          "example": [
-            "Daily",
-            "Weekly",
-            "Monthly"
-          ],
-          "items": {
-            "type": "string"
+      },
+      "ReportPeriod": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "enum": {
+            "type": "array",
+            "example": [
+              "Daily",
+              "Weekly",
+              "Monthly"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Reporting period"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Error message"
+                  }
+                }
+              }
+            }
           }
         }
       }
